@@ -1,0 +1,15 @@
+﻿using MyGolfStatsApi.Db.Models;
+using MyGolfStatsApi.DTOs;
+
+namespace MyGolfStatsApi.Services
+{
+    public interface IUserService
+    {
+        Task<bool> CheckIfUserExists(string golfId);
+        Task<User> RegisterUser(RegisterRequestDTO req);
+        Task<User> GetUserWithGolfId(string golfId);
+        Task<User> GetUserWithId(Guid id);
+        string GenerateJwtToken(User user);
+        Task<User> UpdateUser(UserUpdateDTO user);
+    }
+}
