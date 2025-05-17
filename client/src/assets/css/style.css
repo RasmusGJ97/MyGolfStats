@@ -1,0 +1,143 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.background-image {
+  background-image: url('/src/assets/img/4648.jpeg');
+  min-height: 100vh;
+  width: 100%;
+  background-size: cover; 
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.golf-dark {
+  background-color: rgba(0, 0, 0, 0.80);
+}
+
+.golf-dark-nav {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.navbar {
+  z-index: 1000;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: -56px;
+}
+
+.container-navbar {
+  max-height: 56px !important;
+}
+
+.nav-item {
+  margin-left: 5px !important;
+}
+
+.nav-link {
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #0d6efd;
+}
+
+.login-container {
+  background-color: #121212;
+}
+
+.card {
+  border-radius: 8px;
+}
+
+.form-control {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.router-link-active {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.router-link-exact-active {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.invisible-div {
+  width: 80vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.invisible-div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.invisible-div::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.button-secondary {
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.button-secondary:hover {
+  border-color: #6c757d !important;
+  color: white !important;
+}
+
+.col-md-1-5 {
+  flex: 0 0 15% !important;
+  max-width: 15% !important;
+}
+
+@media (min-width: 768px) {
+  .col-md-5-5 {
+    flex: 0 0 auto !important;
+    width: 48.4% !important;
+  }
+}
