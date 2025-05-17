@@ -11,7 +11,7 @@ namespace MyGolfStatsApi.Db.Models
         [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
         public string ClubName { get; set; }
-        [Range(55, 155)]
+        [Range(0, 155)]
         public decimal? CourseRating { get; set; }
         [Required]
         [Range(27, 80)]

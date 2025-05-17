@@ -131,8 +131,13 @@ namespace MyGolfStatsApi.Services
             {
                 var user = await _context.Users
                     .Include(u => u.Settings)
-                    .Include(u => u.Rounds)
                     .Include(u => u.Bag)
+                    .Include(u => u.Rounds)
+                        .ThenInclude(r => r.Statistics)
+                            .ThenInclude(s => s.Hole)
+                    .Include(u => u.Rounds)
+                        .ThenInclude(r => r.Statistics)
+                            .ThenInclude(s => s.PenaltyCause)
                     .FirstOrDefaultAsync(u => u.Id == id);
 
                 return user;

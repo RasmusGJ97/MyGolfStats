@@ -19,7 +19,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPut("updateBag")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> UpdateBag([FromBody] BagUpdateDTO bagToUpdate)
         {
             if (bagToUpdate == null || bagToUpdate.UserId == Guid.Empty)

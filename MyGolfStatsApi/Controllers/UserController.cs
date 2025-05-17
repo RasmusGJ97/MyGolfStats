@@ -18,7 +18,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPut("updateUser")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO userToUpdate)
         {
             if (userToUpdate == null || userToUpdate.Id == Guid.Empty)
@@ -41,7 +41,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpGet("user")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetUser(Guid userId)
         {
             if (userId == Guid.Empty)

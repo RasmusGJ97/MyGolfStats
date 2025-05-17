@@ -18,7 +18,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPut("updateRound")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> UpdateRound([FromBody] RoundDTO round)
         {
             if (round == null)
@@ -41,7 +41,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPost("addRound")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> AddRound([FromBody] AddRoundDTO round)
         {
             if (round == null)

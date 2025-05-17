@@ -8,6 +8,6 @@ namespace MyGolfStatsApi.DTOs
         public DateOnly Date { get; set; }
         public string Tee { get; set; }
         public Guid UserId { get; set; }
-        public List<Statistics> Statistics { get; set; }
+        public List<StatisticsDTO> Statistics { get; set; }
     }
 }

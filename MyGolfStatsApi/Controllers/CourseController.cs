@@ -19,7 +19,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPut("updateCourse")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> UpdateCourse([FromBody] CourseDTO course)
         {
             if (course == null)
@@ -42,7 +42,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpPost("addCourse")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> AddCourse([FromBody] AddCourseDTO course)
         {
             if (course == null)
@@ -65,7 +65,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpGet("allCourses")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetAllCourses()
         {
             var listOfCourses = await _courseService.GetAllCourses();

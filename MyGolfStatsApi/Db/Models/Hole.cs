@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace MyGolfStatsApi.Db.Models
@@ -15,7 +16,7 @@ namespace MyGolfStatsApi.Db.Models
         public int Par { get; set; }
         [Required]
         public int CourseId { get; set; }
-        [Required]
+        [ForeignKey(nameof(CourseId))]
         [JsonIgnore]
         public Course Course { get; set; }
     }
