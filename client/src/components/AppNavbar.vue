@@ -38,7 +38,7 @@
             <router-link class="nav-link p-3" to="/courses">Banor</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link p-3" to="/">Min Profil</router-link>
+            <router-link class="nav-link p-3" to="/settings">Min Profil</router-link>
           </li>
           <li class="nav-item mx-2">
             <div style="width: 1px; height: 24px; background-color: rgba(255,255,255,0.3);"></div>
@@ -68,7 +68,7 @@ export default {
   computed: {
     user() {
       const user = useUserStore().user
-      console.log(user)
+      console.log(this.user)
       return user
     }
   }
