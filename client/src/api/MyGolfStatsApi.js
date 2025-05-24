@@ -108,3 +108,13 @@ export const getUser = async (userId) => {
     throw new Error('Fel vid hämtning av användardata: ' + error.message);
   }
 };
+
+export const updateUser = async (userToUpdate) => {
+  try {
+    const response = await apiClient.put(`/User/updateUser`, userToUpdate);
+    return response.data.user;
+  } catch (error) {
+    logout()
+    throw new Error('Fel vid hämtning av användardata: ' + error.message);
+  }
+};

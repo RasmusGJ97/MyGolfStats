@@ -29,7 +29,7 @@
             <router-link class="nav-link p-3" to="/" exact>Hem</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link p-3" to="/">Statistik</router-link>
+            <router-link class="nav-link p-3" to="/statistics">Statistik</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link p-3" to="/rounds">Rundor</router-link>
@@ -68,7 +68,6 @@ export default {
   computed: {
     user() {
       const user = useUserStore().user
-      console.log(this.user)
       return user
     }
   }

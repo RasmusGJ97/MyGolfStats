@@ -1,10 +1,12 @@
 <template>
   <app-navbar v-if="isLoggedIn" class="sticky-top" />
   <router-view />
+  <app-footer v-if="isLoggedIn" />
 </template>
 
 <script>
 import AppNavbar from "./components/AppNavbar.vue"
+import AppFooter from "./components/AppFooter.vue"
 import { onMounted } from 'vue'
 import { useUserStore } from './stores/userStore'
 import { useCourseStore } from './stores/courseStore'
@@ -12,7 +14,8 @@ import { useCourseStore } from './stores/courseStore'
 export default {
   name: 'App',
   components: {
-    AppNavbar
+    AppNavbar,
+    AppFooter
   },
   setup() {
     const userStore = useUserStore()

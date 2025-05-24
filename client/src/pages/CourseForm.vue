@@ -22,6 +22,12 @@
     
           <div class="mb-3">
             <label class="form-label">Hål: (lägg till minst ett)</label>
+            <div>
+              <button type="button" class="btn btn-outline-light d-flex justify-content-center align-items-center mb-2" @click="addHole">
+                <i class="fas fa-plus small me-2"></i>
+                <span>Lägg till hål</span>
+              </button>
+            </div>
             <div class="row">
               <div v-for="(hole, index) in course.holes" :key="index" class="col-lg-12 col-xl-6 col-xxl-4 mb-3 d-flex justify-content-center align-items-center gap-2 flex-wrap">
                 <div class="text-center">
@@ -40,15 +46,9 @@
                   </button>
                 </div>
               </div>
-              <div class="d-flex justify-content-between mt-2">
-                <button type="button" class="btn btn-outline-light d-flex justify-content-center align-items-center" @click="addHole">
-                  <i class="fas fa-plus small me-2"></i>
-                  <span>Lägg till hål</span>
-                </button>
-                <div>
-                  <router-link to="/courses" class="btn btn-outline-secondary button-secondary">Avbryt</router-link>
-                  <button type="submit" class="btn btn-outline-primary ms-3 me-2">Spara</button>
-                </div>
+              <div class="d-flex justify-content-end mt-2">
+                <router-link to="/courses" class="btn btn-outline-secondary button-secondary">Avbryt</router-link>
+                <button type="submit" class="btn btn-outline-primary ms-3 me-2">Spara</button>
               </div>
             </div>
           </div>

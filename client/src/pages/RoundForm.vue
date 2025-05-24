@@ -42,7 +42,7 @@
             </div>
           </div>
 
-          <div class="row justify-content-center" v-if="selectedCourseId">
+          <div class="row justify-content-center" v-if="selectedCourseId && userSettings">
             <div
               v-for="(stat, index) in round.statistics"
               :key="index"
@@ -55,31 +55,31 @@
                   <input v-model.number="stat.strokes" type="number" min="0" class="form-control form-control-sm" />
                 </div>
   
-                <div class="col-6 col-md-4">
+                <div class="col-6 col-md-4" v-if="userSettings.statPutts">
                   <label class="form-label">Puttar:</label>
                   <input v-model.number="stat.putts" type="number" min="0" class="form-control form-control-sm" />
                 </div>
   
-                <div class="col-6 col-md-4">
+                <div class="col-6 col-md-4" v-if="userSettings.statLostBalls">
                   <label class="form-label">Förlorade bollar:</label>
                   <input v-model.number="stat.lostBalls" type="number" min="0" class="form-control form-control-sm" />
                 </div>
   
                 <div class="col-12">
                   <label class="form-label d-block">Checkboxar:</label>
-                  <div v-if="stat?.hole?.par !== 3" class="form-check form-check-inline">
+                  <div v-if="stat?.hole?.par !== 3 && userSettings.statFiR" class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" v-model="stat.fiR" />
                     <label class="form-check-label">FIR</label>
                   </div>
-                  <div class="form-check form-check-inline">
+                  <div class="form-check form-check-inline" v-if="userSettings.statGiR">
                     <input class="form-check-input" type="checkbox" v-model="stat.giR" />
                     <label class="form-check-label">GIR</label>
                   </div>
-                  <div class="form-check form-check-inline">
+                  <div class="form-check form-check-inline" v-if="userSettings.statUpAndDown">
                     <input class="form-check-input" type="checkbox" v-model="stat.upAndDown" />
                     <label class="form-check-label">Up & Down</label>
                   </div>
-                  <div class="form-check form-check-inline">
+                  <div class="form-check form-check-inline" v-if="userSettings.statSandSave">
                     <input class="form-check-input" type="checkbox" v-model="stat.sandSave" />
                     <label class="form-check-label">Sand Save</label>
                   </div>
@@ -87,24 +87,20 @@
               </div>
   
               <hr class="bg-light my-3" />
-              <h6>Plikt:</h6>
+              <h6 v-if="userSettings.statPenaltyStrokes || userSettings.statPenaltyCause">Plikt:</h6>
   
-              <div
-                v-for="(penalty, pIndex) in stat.penaltyCause"
-                :key="pIndex"
-                class="row g-2 align-items-end mb-2"
-              >
-                <div class="col-6 col-md-3">
+              <div v-for="(penalty, pIndex) in stat.penaltyCause" :key="pIndex" class="row g-2 align-items-end mb-2">
+                <div class="col-6 col-md-3" v-if="userSettings.statPenaltyCause">
                   <label class="form-label">Orsak:</label>
-                    <select v-model="penalty.cause" class="form-select form-select-sm">
-                      <option disabled value="">-- Välj orsak --</option>
-                      <option>Vattenhinder</option>
-                      <option>Out of bounds</option>
-                      <option>Ospelbar boll</option>
-                      <option>Annat</option>
-                    </select>
+                  <select v-model="penalty.cause" class="form-select form-select-sm">
+                    <option disabled value="">-- Välj orsak --</option>
+                    <option>Vattenhinder</option>
+                    <option>Out of bounds</option>
+                    <option>Ospelbar boll</option>
+                    <option>Annat</option>
+                  </select>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" v-if="userSettings.statPenaltyCause">
                   <label class="form-label">Klubba:</label>
                     <select v-model="penalty.club" class="form-select form-select-sm">
                       <option disabled value="">-- Välj klubba --</option>
@@ -113,7 +109,7 @@
                       </option>
                     </select>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" v-if="userSettings.statPenaltyStrokes">
                   <label class="form-label">Pliktslag:</label>
                   <input v-model.number="penalty.penaltyStrokes" type="number" min="0" class="form-control form-control-sm" />
                 </div>
@@ -128,7 +124,7 @@
               </div>
   
               <button
-                class="btn btn-sm btn-outline-light mt-2"
+                class="btn btn-sm btn-outline-light mt-2" v-if="userSettings.statPenaltyStrokes || userSettings.statPenaltyCause"
                 @click.prevent="stat.penaltyCause.push({ cause: '', club: '', penaltyStrokes: 0 })">
                 Lägg till orsak
               </button>
@@ -161,6 +157,7 @@ export default {
   data() {
     const userStore = useUserStore();
     return {
+      userStore,
       round: {
         date: "",
         tee: "",
@@ -284,9 +281,34 @@ export default {
           key: clubKey,
           label: nameMap[clubKey] || clubKey
       }));
+    },
+    userSettings() {
+      console.log(this.userStore.user.settings)
+      return this.userStore.user.settings;
     }
   },
   methods: {
+    cleanupStats(stat) {
+      const settings = this.userSettings;
+
+      if (!settings || !stat) {
+        console.warn("cleanupStats avbruten: settings eller stat saknas.");
+        return;
+      }
+
+      const arrayFields = ['penaltyCause']; // Lägg till andra array-fält vid behov
+
+      for (const key in settings) {
+        if (Object.prototype.hasOwnProperty.call(settings, key) && settings[key] === false) {
+          const statKey = key.replace(/^stat/, "");
+          const statField = statKey.charAt(0).toLowerCase() + statKey.slice(1);
+
+          if (Object.prototype.hasOwnProperty.call(stat, statField)) {
+            stat[statField] = arrayFields.includes(statField) ? [] : null;
+          }
+        }
+      }
+    },
     calculateScore() {
       this.round.bruttoScore = this.round.statistics.reduce((total, stat) => {
         return total + (stat.strokes || 0);
@@ -394,6 +416,7 @@ export default {
         this.calculateBirdiesAndEagles();
         this.updateFiRBasedOnPar();
         this.calculateScore();
+        this.round.statistics.forEach(stat => this.cleanupStats(stat));
 
         let formattedDate;
 
@@ -426,14 +449,16 @@ export default {
               course: { id: stat.hole.courseId }
             },
             round: { id: this.round.id }, 
-            penaltyCause: stat.penaltyCause.map(cause => ({
-              ...cause,
-            }))
+            penaltyCause: Array.isArray(stat.penaltyCause)
+              ? stat.penaltyCause.map(cause => ({ ...cause }))
+              : []
           }))
         };
 
         delete cleanRound.bruttoScore;
         delete cleanRound.gainedStrokes;
+
+        console.log(cleanRound)
 
         if (this.isEdit) {
           await updateRound(cleanRound);
@@ -444,6 +469,7 @@ export default {
         }
         this.$router.push("/rounds");
       } catch (err) {
+        console.log(err)
         alert("Kunde inte spara runda.");
       }
     }

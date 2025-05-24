@@ -2,8 +2,11 @@
   <div class="background-image">
     <div class="invisible-div golf-dark text-light pb-4 rounded">
       <div class="container py-4">
-        <div class="mb-5">
+        <div class="mb-5 d-flex justify-content-between align-items-center">
           <h2 class="text-light m-0">Inställningar</h2>
+          <button class="btn btn-outline-light" @click="toggleEditMode">
+            {{ editMode ? 'Avbryt' : 'Ändra' }}
+          </button>
         </div>
 
         <div v-if="!loading && user">
@@ -12,9 +15,16 @@
             <hr class="border-light mb-4 mt-4" />
             <h5 class="text-uppercase">Profil</h5>
             <div class="ps-3">
-              <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
-              <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
-              <p><strong>HCP:</strong> {{ user.hcp }}</p>
+              <div v-if="!editMode">
+                <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
+                <p><strong>HCP:</strong> {{ user.hcp }}</p>
+              </div>
+              <div v-else>
+                <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
+                <p><strong>HCP:</strong> <input type="number" v-model="editableUser.hcp" class="form-control" /></p>
+              </div>
             </div>
           </section>
 
@@ -24,16 +34,13 @@
             <h5 class="text-uppercase">Statistik</h5>
             <div class="ps-3">
               <ul class="list-unstyled">
-                <li><strong>Birdie:</strong> {{ user.settings?.statBirdie ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Eagle:</strong> {{ user.settings?.statEagle ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Fairway träff (FiR):</strong> {{ user.settings?.statFiR ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Green i regulation (GiR):</strong> {{ user.settings?.statGiR ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Putts:</strong> {{ user.settings?.statPutts ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Bunkerräddning (Sand Save):</strong> {{ user.settings?.statSandSave ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Up & Down:</strong> {{ user.settings?.statUpAndDown ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Straffslag:</strong> {{ user.settings?.statPenaltyStrokes ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Orsak till straffslag:</strong> {{ user.settings?.statPenaltyCause ? 'Ja' : 'Nej' }}</li>
-                <li><strong>Bollar bortslagna:</strong> {{ user.settings?.statLostBalls ? 'Ja' : 'Nej' }}</li>
+                <li v-for="(value, key) in editableUser.settings" :key="key">
+                  <strong>{{ formatStatLabel(key) }}: </strong>
+                  <template v-if="!editMode">{{ value ? 'Ja' : 'Nej' }}</template>
+                  <template v-else>
+                    <input type="checkbox" v-model="editableUser.settings[key]" class="form-check-input ms-2" />
+                  </template>
+                </li>
               </ul>
             </div>
           </section>
@@ -44,12 +51,34 @@
             <h5 class="text-uppercase">Bag</h5>
             <div class="ps-3">
               <ul class="list-inline">
-                <li v-for="(hasClub, club) in bagClubs" :key="club" class="list-inline-item badge bg-light text-dark m-1">
-                  {{ formatClubName(club) }}
+                <li
+                  v-for="(hasClub, club) in editableUser.bag"
+                  :key="club"
+                  class="list-inline-item m-1"
+                  v-show="hasClub || editMode"
+                >
+                  <span v-if="!editMode" class="badge bg-light text-dark fs-8 px-3 py-2">
+                    {{ formatClubName(club) }}
+                  </span>
+                  <label v-else class="form-check-label text-light">
+                    <input
+                      type="checkbox"
+                      v-model="editableUser.bag[club]"
+                      class="form-check-input me-1"
+                    />
+                    {{ formatClubName(club) }}
+                  </label>
                 </li>
               </ul>
             </div>
           </section>
+
+
+          <!-- Spara-knapp -->
+          <div v-if="editMode" class="d-flex justify-content-end mt-4">
+            <button class="btn btn-outline-secondary me-2" @click="cancelChanges">Avbryt</button>
+            <button class="btn btn-outline-primary" @click="saveChanges">Spara</button>
+          </div>
         </div>
 
         <div v-if="loading" class="text-center my-5">
@@ -64,13 +93,16 @@
 
 
 
+
 <script>
 import { useUserStore } from '../stores/userStore'
 
 export default {
   data() {
     return {
-      loading: true
+      loading: true,
+      editMode: false,
+      editableUser: null
     }
   },
   computed: {
@@ -85,7 +117,7 @@ export default {
         'twoW', 'threeW', 'fourW', 'fiveW', 'sixW', 'sevenW',
         'twoHy', 'threeHy', 'fourHy', 'fiveHy',
         'oneI', 'twoI', 'threeI', 'fourI', 'fiveI', 'sixI', 'sevenI', 'eightI', 'nineI',
-        'aWedge', 'gWedge', 'sWedge', 'lWedge'
+        'pWedge', 'aWedge', 'gWedge', 'sWedge', 'lWedge'
       ]
 
       const result = {}
@@ -102,21 +134,60 @@ export default {
     const userStore = useUserStore()
     try {
       await userStore.fetchUser()
+      this.initEditableUser()
     } catch (err) {
       console.error("Kunde inte hämta användare:", err)
     } finally {
       this.loading = false
     }
   }, methods: {
+    toggleEditMode() {
+      this.editMode = !this.editMode
+      if (this.editMode) {
+        this.initEditableUser()
+      }
+    },
+    initEditableUser() {
+      const clone = JSON.parse(JSON.stringify(this.user))
+      delete clone.bag.id
+      delete clone.bag.userId
+      delete clone.settings.id
+      delete clone.settings.userId
+      this.editableUser = clone
+    },
+    saveChanges() {
+      const userStore = useUserStore()
+      userStore.updateUser({ id: this.user.id, ...this.editableUser })
+      this.editMode = false
+    },
+    cancelChanges() {
+      this.editMode = false
+      this.initEditableUser()
+    },
     formatClubName(clubKey) {
       const map = {
         driver: "Driver",
         twoW: "2 Wood", threeW: "3 Wood", fourW: "4 Wood", fiveW: "5 Wood", sixW: "6 Wood",  sevenW: "7 Wood",
         twoHy: "2 Hybrid", threeHy: "3 Hybrid", fourHy: "4 Hybrid",  fiveHy: "5 Hybrid", 
         oneI: "1 Iron", twoI: "2 Iron", threeI: "3 Iron", fourI: "4 Iron",  fiveI: "5 Iron", sixI: "6 Iron", sevenI: "7 Iron", eightI: "8 Iron", nineI: "9 Iron",
-        aWedge: "Approach Wedge", gWedge: "Gap Wedge", sWedge: "Sand Wedge", lWedge: "Lob Wedge"
+        pWedge: "Pitching Wedge", aWedge: "Approach Wedge", gWedge: "Gap Wedge", sWedge: "Sand Wedge", lWedge: "Lob Wedge"
       };
       return map[clubKey] || clubKey;
+    },
+    formatStatLabel(key) {
+      const map = {
+        statBirdie: "Birdie",
+        statEagle: "Eagle",
+        statFiR: "Fairway träff (FiR)",
+        statGiR: "Green in regulation (GiR)",
+        statPutts: "Puttar",
+        statSandSave: "Bunkerräddning (Sand Save)",
+        statUpAndDown: "Up & Down",
+        statPenaltyStrokes: "Pliktslag",
+        statPenaltyCause: "Orsak till pliktslag",
+        statLostBalls: "Bortslagna bollar"
+      }
+      return map[key] || key
     }
   }
 }
