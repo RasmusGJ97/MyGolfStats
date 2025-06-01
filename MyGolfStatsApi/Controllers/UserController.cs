@@ -33,10 +33,58 @@ namespace MyGolfStatsApi.Controllers
                 return NotFound($"User with ID {userToUpdate.Id} was not found.");
             }
 
+            var response = _userService.MapToUserResponse(updatedUser);
+
             return Ok(new
             {
                 message = "User updated successfully.",
-                user = updatedUser
+                user = response.Result
+            });
+        }          
+        
+        [HttpPut("updatePassword")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> UpdatePassword([FromBody] PasswordChangeDTO passwordChange)
+        {
+            if (passwordChange == null || passwordChange.UserId == Guid.Empty)
+            {
+                return BadRequest("Invalid password data.");
+            }
+
+            var updatedPassword = await _userService.UpdatePassword(passwordChange);
+
+            if (updatedPassword == null)
+            {
+                return NotFound($"User with ID {passwordChange.UserId} was not found.");
+            }
+
+            return Ok(new
+            {
+                message = "Password updated successfully.",
+                user = updatedPassword
+            });
+        }        
+        
+        [HttpDelete("deleteUser")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser([FromBody] Guid userId)
+        {
+            if (userId == null || userId == Guid.Empty)
+            {
+                return BadRequest("Invalid user data.");
+            }
+
+            var deletedUser = await _userService.DeleteUser(userId);
+
+            if (deletedUser == false)
+            {
+                return NotFound($"User with ID {userId} was not found.");
+            }
+
+            return Ok(new
+            {
+                message = "User deleted successfully.",
+                user = deletedUser
             });
         }
 
@@ -56,10 +104,12 @@ namespace MyGolfStatsApi.Controllers
                 return NotFound($"User with ID {userId} was not found.");
             }
 
+            var response = _userService.MapToUserResponse(userInfo);
+
             return Ok(new
             {
                 message = "User found successfully.",
-                user = userInfo
+                user = response.Result
             });
         }
     }

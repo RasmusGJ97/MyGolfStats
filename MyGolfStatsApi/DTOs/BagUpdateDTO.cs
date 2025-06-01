@@ -23,6 +23,7 @@
         public bool SevenI { get; set; } = true;
         public bool EightI { get; set; } = true;
         public bool NineI { get; set; } = true;
+        public bool PWedge { get; set; } = true;
         public bool AWedge { get; set; } = true;
         public bool GWedge { get; set; } = true;
         public bool SWedge { get; set; } = true;

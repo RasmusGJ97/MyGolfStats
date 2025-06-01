@@ -2,8 +2,8 @@
 {
     public class StatisticsDTO
     {
-        public bool? FiR { get; set; }
-        public bool? GiR { get; set; }
+        public string? FiR { get; set; }
+        public string? GiR { get; set; }
         public bool? Birdie { get; set; }
         public bool? Eagle { get; set; }
         public int? PenaltyStrokes { get; set; }
