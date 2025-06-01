@@ -33,7 +33,7 @@
 
             <div class="col-md-4">
               <label class="form-label">Hål spelade:</label>
-              <input v-model.number="round.holesPlayed" type="number" min="1" class="form-control form-control-sm" required />
+              <input v-model.number="round.holesPlayed" type="number" min="1" :max="selectedCourse?.holes?.length"  class="form-control form-control-sm" required />
             </div>
 
             <div class="col-md-4">
@@ -66,22 +66,49 @@
                 </div>
   
                 <div class="col-12">
-                  <label class="form-label d-block">Checkboxar:</label>
-                  <div v-if="stat?.hole?.par !== 3 && userSettings.statFiR" class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" v-model="stat.fiR" />
-                    <label class="form-check-label">FIR</label>
-                  </div>
-                  <div class="form-check form-check-inline" v-if="userSettings.statGiR">
-                    <input class="form-check-input" type="checkbox" v-model="stat.giR" />
-                    <label class="form-check-label">GIR</label>
-                  </div>
-                  <div class="form-check form-check-inline" v-if="userSettings.statUpAndDown">
-                    <input class="form-check-input" type="checkbox" v-model="stat.upAndDown" />
-                    <label class="form-check-label">Up & Down</label>
-                  </div>
-                  <div class="form-check form-check-inline" v-if="userSettings.statSandSave">
-                    <input class="form-check-input" type="checkbox" v-model="stat.sandSave" />
-                    <label class="form-check-label">Sand Save</label>
+                  <label class="form-label d-block mb-2">Statistik:</label>
+                  <div class="row g-2 align-items-center">
+                    <div v-if="stat?.hole?.par !== 3 && userSettings.statFiR" class="col-3">
+                      <label class="form-label mb-1">FIR</label>
+                      <select class="form-select form-select-sm" v-model="stat.fiR">
+                        <option :value="null">--</option>
+                        <option value="hit">Träff</option>
+                        <option value="miss-left">Miss vänster</option>
+                        <option value="miss-right">Miss höger</option>
+                        <option value="miss-short">Miss kort</option>
+                        <option value="miss-long">Miss lång</option>
+                      </select>
+                    </div>
+
+                    <div v-if="userSettings.statGiR" class="col-3">
+                      <label class="form-label mb-1">GIR</label>
+                      <select class="form-select form-select-sm" v-model="stat.giR">
+                        <option :value="null">--</option>
+                        <option value="hit">Träff</option>
+                        <option value="miss-left">Miss vänster</option>
+                        <option value="miss-right">Miss höger</option>
+                        <option value="miss-short">Miss kort</option>
+                        <option value="miss-long">Miss lång</option>
+                      </select>
+                    </div>
+
+                    <div v-if="userSettings.statUpAndDown" class="col-3">
+                      <label class="form-label mb-1">Up & Down</label>
+                      <select class="form-select form-select-sm" v-model="stat.upAndDown">
+                        <option :value="null">--</option>
+                        <option :value="true">Ja</option>
+                        <option :value="false">Nej</option>
+                      </select>
+                    </div>
+
+                    <div v-if="userSettings.statSandSave" class="col-3">
+                      <label class="form-label mb-1">Sand Save</label>
+                      <select class="form-select form-select-sm" v-model="stat.sandSave">
+                        <option :value="null">--</option>
+                        <option :value="true">Ja</option>
+                        <option :value="false">Nej</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -167,8 +194,8 @@ export default {
         statistics: [
           {
             id:0,
-            fiR: false,
-            giR: false,
+            fiR: null,
+            giR: null,
             birdie: false,
             eagle: false,
             penaltyStrokes: 0,
@@ -180,8 +207,8 @@ export default {
                 penaltyStrokes: 0
               }
             ],
-            upAndDown: false,
-            sandSave: false,
+            upAndDown: null,
+            sandSave: null,
             putts: 0,
             strokes: 0,
             holeId: 0,
@@ -243,6 +270,9 @@ export default {
     }
   },
   computed: {
+    selectedCourse(){
+      return this.courses.find(c => c.id === this.selectedCourseId);
+    },
     activeClubs() {
       const userStore = useUserStore();
       const bag = userStore.user?.bag || {};
@@ -283,7 +313,6 @@ export default {
       }));
     },
     userSettings() {
-      console.log(this.userStore.user.settings)
       return this.userStore.user.settings;
     }
   },
@@ -355,13 +384,13 @@ export default {
           strokes: 0,
           putts: 0,
           penaltyStrokes: 0,
-          fiR: false,
-          giR: false,
+          fiR: null,
+          giR: null,
           birdie: false,
           eagle: false,
           lostBalls: 0,
-          upAndDown: false,
-          sandSave: false,
+          upAndDown: null,
+          sandSave: null,
           holeId: hole.id,
           roundId: 0,
           penaltyCause: [],
@@ -396,13 +425,13 @@ export default {
           strokes: 0,
           putts: 0,
           penaltyStrokes: 0,
-          fiR: false,
-          giR: false,
+          fiR: null,
+          giR: null,
           birdie: false,
           eagle: false,
           lostBalls: 0,
-          upAndDown: false,
-          sandSave: false,
+          upAndDown: null,
+          sandSave: null,
           holeId: hole.id,
           roundId: 0,
           penaltyCause: [],
@@ -457,8 +486,6 @@ export default {
 
         delete cleanRound.bruttoScore;
         delete cleanRound.gainedStrokes;
-
-        console.log(cleanRound)
 
         if (this.isEdit) {
           await updateRound(cleanRound);

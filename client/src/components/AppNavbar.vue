@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark golf-dark-nav" style="max-height: 56px;">
     <div class="container-fluid container-navbar">
-      <a class="navbar-brand" href="/">MyGolfStats</a>
+      <a class="navbar-brand" href="/">
+        <img src="../assets/img/mygolfstats2rows-logo-bigger.png" alt="MyGolfStats logo" style="height: 40px; filter: invert(1) brightness(200%) contrast(200%);">
+      </a>
       
       <!-- Toggler (mobil) -->
       <button

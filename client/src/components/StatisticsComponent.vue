@@ -85,7 +85,7 @@ export default {
   },
   data() {
     return {
-      palette: ['#38761d', '#cc0000'],
+      palette: ['#38761d', '#cc0000', '#cc0000', '#cc0000', '#cc0000'],
       palette2: [
         '#1f77b4', // blå
         '#ff7f0e', // orange
@@ -119,6 +119,7 @@ export default {
         { title: 'Antal rundor:', value: this.statistics.length },
         { title: 'Bortslagna bollar:', value: this.lostBalls },
         { title: 'Snitt Score:', value: this.averageScore },
+        { title: 'Bästa Score:', value: this.bestScore },
         { title: 'Pliktslag:', value: this.totalPenaltyStrokes },
         { title: 'Snitt Pliktslag:', value: this.averagePenaltyStrokes },
       ]
@@ -159,6 +160,37 @@ export default {
       return (totalHoleScore / validHoleStats.length).toFixed(1);
     },
 
+    bestScore() {
+      if (!this.statistics || this.statistics.length === 0) return 0;
+
+      if (this.selectedSubFilter !== 'hole') {
+        const fullRounds = this.statistics.filter(round =>
+          Array.isArray(round.statistics) && round.statistics.length === 18 &&
+          typeof round.bruttoScore === 'number'
+        );
+
+        if (fullRounds.length === 0) return 0;
+
+        const best = fullRounds.reduce((min, round) => {
+          return round.bruttoScore < min ? round.bruttoScore : min;
+        }, Infinity);
+
+        return best === Infinity ? 0 : best;
+      }
+
+      const validHoleStats = this.statistics.filter(stat =>
+        typeof stat.strokes === 'number'
+      );
+
+      if (validHoleStats.length === 0) return 0;
+
+      const bestHole = validHoleStats.reduce((min, stat) => {
+        return stat.strokes < min ? stat.strokes : min;
+      }, Infinity);
+
+      return bestHole === Infinity ? 0 : bestHole;
+    },
+
     averagePenaltyStrokes() {
       const allStats = this.normalizedStatistics;
       if (!allStats || allStats.length === 0) return 0;
@@ -185,17 +217,31 @@ export default {
     },
 
     firSeries() {
-      const total = this.normalizedStatistics.filter(s => s.fiR !== null).length
-      const hit = this.normalizedStatistics.filter(s => s.fiR === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const allStats = this.normalizedStatistics;
+      const total = allStats.filter(s => ['hit', 'miss-left', 'miss-right', 'miss-short', 'miss-long'].includes(s.fiR)).length;
+      const hit = allStats.filter(s => s.fiR === 'hit').length;
+      const missLeft = allStats.filter(s => s.fiR === 'miss-left').length;
+      const missRight = allStats.filter(s => s.fiR === 'miss-right').length;
+      const missShort = allStats.filter(s => s.fiR === 'miss-short').length;
+      const missLong = allStats.filter(s => s.fiR === 'miss-long').length;
+
+      return total > 0
+        ? [hit, missLeft, missRight, missShort, missLong]
+        : [0, 0, 0, 0, 0];
     },
 
     girSeries() {
-      const total = this.normalizedStatistics.filter(s => s.giR !== null).length
-      const hit = this.normalizedStatistics.filter(s => s.giR === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const allStats = this.normalizedStatistics;
+      const total = allStats.filter(s => ['hit', 'miss-left', 'miss-right', 'miss-short', 'miss-long'].includes(s.giR)).length;
+      const hit = allStats.filter(s => s.giR === 'hit').length;
+      const missLeft = allStats.filter(s => s.giR === 'miss-left').length;
+      const missRight = allStats.filter(s => s.giR === 'miss-right').length;
+      const missShort = allStats.filter(s => s.giR === 'miss-short').length;
+      const missLong = allStats.filter(s => s.giR === 'miss-long').length;
+
+      return total > 0
+        ? [hit, missLeft, missRight, missShort, missLong]
+        : [0, 0, 0, 0, 0];
     },
 
     upDownSeries() {
@@ -285,16 +331,13 @@ export default {
       const data = this.coursePlayCount();
       if (!data) return null;
 
-      // Hämta Pinia-storen
       const courseStore = useCourseStore();
 
-      // Omvandla till array med { name, count }
       const dataWithNames = Object.entries(data).map(([courseId, count]) => {
         const courseName = courseStore.getCourseById(courseId)?.clubName || `Okänd bana (${courseId})`;
         return { name: courseName, count };
       });
 
-      // Sortera efter flest rundor först
       const sorted = dataWithNames.sort((a, b) => b.count - a.count);
 
       return {
@@ -337,10 +380,17 @@ export default {
   },
   methods: {
     donutOptions(label) {
+      const labelsMap = {
+        'FiR': ['Träff', 'Miss vänster', 'Miss höger', 'Miss kort', 'Miss lång'],
+        'GiR': ['Träff', 'Miss vänster', 'Miss höger', 'Miss kort', 'Miss lång'],
+        'Up & Down': [`${label} - Ja`, `${label} - Nej`],
+        'Sand Save': [`${label} - Ja`, `${label} - Nej`]
+      };
+
       return {
-        labels: [`${label} - Ja`, `${label} - Nej`],
+        labels: labelsMap[label] || [],
         title: {
-          text: `${label} %`,
+          text: `${label} % i år`,
           align: 'center',
           style: {
             color: '#ffffff',
@@ -352,7 +402,7 @@ export default {
           horizontalAlign: 'center',
           fontSize: '14px',
           labels: {
-            colors: ['#ffffff', '#ffffff']
+            colors: ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
           }
         },
         dataLabels: {
@@ -366,9 +416,6 @@ export default {
         colors: this.palette,
         stroke: {
           show: false
-        },
-        chart: {
-          foreColor: '#ffffff'
         }
       }
     },

@@ -177,6 +177,28 @@ html, body {
   min-height: 347px;
 }
 
+.apexcharts-menu {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Menyvalen */
+.apexcharts-menu-item {
+  color: #fff !important;
+}
+
+/* Hover-effekt */
+.apexcharts-menu-item:hover {
+  background-color: #333 !important;
+}
+
+/* Hamburgerikonen */
+.apexcharts-toolbar svg {
+  fill: #fff !important;
+}
+
 @media (min-width: 768px) {
   .col-md-5-5 {
     flex: 0 0 auto !important;

@@ -25,6 +25,33 @@
                 <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
                 <p><strong>HCP:</strong> <input type="number" v-model="editableUser.hcp" class="form-control" /></p>
               </div>
+              <div>
+                <button class="btn btn-outline-success w-20" @click="passChangeOn" v-if="!passChange">Byt lösenord</button>
+              </div>
+              <div class="alert alert-success mt-3" v-if="success">Lösenordet har uppdaterats!</div>
+              <div class="alert alert-danger mt-3" v-if="error">{{ error }}</div>
+              <div v-if="passChange">
+                <div style="max-width: 400px;">
+                  <form @submit.prevent="changePassword">
+                    <div class="mb-3">
+                      <label for="currentPassword" class="form-label">Nuvarande lösenord</label>
+                      <input type="password" v-model="currentPassword" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="newPassword" class="form-label">Nytt lösenord</label>
+                      <input type="password" v-model="newPassword" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label">Bekräfta nytt lösenord</label>
+                      <input type="password" v-model="confirmPassword" class="form-control" required />
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                      <button type="button" class="btn btn-outline-secondary w-50 me-2" @click="passChangeOn">Avbryt</button>
+                      <button type="submit" class="btn btn-outline-success w-50">Byt lösenord</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -35,10 +62,11 @@
             <div class="ps-3">
               <ul class="list-unstyled">
                 <li v-for="(value, key) in editableUser.settings" :key="key">
-                  <strong>{{ formatStatLabel(key) }}: </strong>
+                  <strong v-if="!editMode">{{ formatStatLabel(key) }}: </strong>
                   <template v-if="!editMode">{{ value ? 'Ja' : 'Nej' }}</template>
                   <template v-else>
-                    <input type="checkbox" v-model="editableUser.settings[key]" class="form-check-input ms-2" />
+                    <input type="checkbox" v-model="editableUser.settings[key]" class="form-check-input ms-2 mx-2" />
+                    <strong>{{ formatStatLabel(key) }}: </strong>
                   </template>
                 </li>
               </ul>
@@ -96,13 +124,20 @@
 
 <script>
 import { useUserStore } from '../stores/userStore'
+import { updatePassword } from '../api/MyGolfStatsApi'
 
 export default {
   data() {
     return {
       loading: true,
       editMode: false,
-      editableUser: null
+      editableUser: null,
+      passChange: false,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      error: '',
+      success: false
     }
   },
   computed: {
@@ -140,7 +175,47 @@ export default {
     } finally {
       this.loading = false
     }
-  }, methods: {
+  }, 
+  methods: {
+    passChangeOn(){
+      if(this.passChange){
+        this.passChange = false
+      }
+      else{
+        this.passChange = true
+      }
+    },
+    async changePassword() {
+      this.error = '';
+      this.success = false;
+
+      if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+        this.error = 'Alla fält måste fyllas i.';
+        return;
+      }
+
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(this.newPassword)) {
+        this.error = 'Lösenordet måste vara minst 8 tecken långt och innehålla både bokstäver och siffror.';
+        return;
+      }
+
+      if (this.newPassword !== this.confirmPassword) {
+        this.error = 'Nya lösenorden matchar inte.';
+        return;
+      }
+
+      try {
+        await updatePassword(this.currentPassword, this.newPassword, this.user.id);
+        this.success = true;
+        this.passChange = false;
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+      } catch (error) {
+        this.error = error.message || 'Ett fel uppstod.';
+      }
+    },
     toggleEditMode() {
       this.editMode = !this.editMode
       if (this.editMode) {

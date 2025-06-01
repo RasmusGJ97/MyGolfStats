@@ -77,6 +77,11 @@ export const addCourse = async (course) => {
   return response.data.course;
 };
 
+export const deleteCourse = async (courseId) => {
+  const response = await apiClient.delete(`/Course/admin/deleteCourse/${courseId}`);
+  return response.data.courseRemoved;
+};
+
 // ======= ROUND =======
 
 export const updateRound = async (round) => {
@@ -88,6 +93,14 @@ export const addRound = async (round) => {
   try {
     const response = await apiClient.post(`/Round/addRound`, round);
     return response.data.round;
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteRound = async (roundId) => {
+  try {
+    const response = await apiClient.delete(`/Round/deleteRound/${roundId}`);
+    return response.data.roundRemoved;
   } catch (error) {
     throw error;
   }
@@ -116,5 +129,19 @@ export const updateUser = async (userToUpdate) => {
   } catch (error) {
     logout()
     throw new Error('Fel vid hämtning av användardata: ' + error.message);
+  }
+};
+
+export const updatePassword = async (oldPassword, newPassword, userId) => {
+  try {
+    const response = await apiClient.put(`/User/updatePassword`, {
+      oldPassword,
+      newPassword,
+      userId
+    });
+    return response.data;
+  } catch (error) {
+    logout();
+    throw new Error('Fel vid uppdatering av lösenord: ' + error.message);
   }
 };

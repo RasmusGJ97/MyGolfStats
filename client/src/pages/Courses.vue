@@ -21,6 +21,7 @@
           :columns="columns"
           :pageSize="10"
           @row-clicked="onRowClicked"
+          @delete-item="onDeleteClicked"
         />
 
         <div v-else class="text-light">Inga golfbanor kunde visas.</div>
@@ -32,6 +33,7 @@
 <script>
 import DataGrid from '../components/DataGrid.vue'
 import { useCourseStore } from '../stores/courseStore'
+import { deleteCourse } from '../api/MyGolfStatsApi';
 
 export default {
   components: { DataGrid },
@@ -49,14 +51,16 @@ export default {
     };
   },
   async mounted() {
-    const courseStore = useCourseStore();
-    if (!courseStore.courses || courseStore.courses.length === 0) {
-      await courseStore.fetchCourses();
-    }
-    this.courses = courseStore.courses;
-    this.loading = false;
+    await this.loadCourses()
   },
   methods: {
+    async loadCourses(){
+      this.loading = true;
+      const courseStore = useCourseStore();
+      await courseStore.fetchCourses();
+      this.courses = courseStore.courses;
+      this.loading = false;
+    },
     onAddCourse() {
       this.$router.push(`/course/new`);
     },
@@ -64,6 +68,13 @@ export default {
       const courseStore = useCourseStore();
       courseStore.setSelectedCourse(course);
       this.$router.push(`/course/${course.id}`);
+    },
+    async onDeleteClicked(course) {
+      const confirmed = window.confirm(`Är du säker på att du vill ta bort denna banan?`);
+      
+      if (!confirmed) return;
+      await deleteCourse(course.id)
+      await this.loadCourses()
     }
   }
 };

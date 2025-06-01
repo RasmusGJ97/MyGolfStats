@@ -18,6 +18,7 @@
               ]"
             ></i>
           </th>
+          <th v-if="shouldShowTrashcanTH(columns)"></th>
         </tr>
       </thead>
       <tbody>
@@ -26,9 +27,21 @@
             <span v-if="Array.isArray(item[column.key])">
               {{ item[column.key].join(', ') }}
             </span>
+            <span v-else-if="column.key === 'nettoScore' && item.par">
+              <span :class="{'text-success': item.nettoScore < item.par}">
+                {{ item[column.key] }}
+              </span>
+            </span>
             <span v-else>
               {{ item[column.key] }}
             </span>
+          </td>
+          <td v-if="shouldShowTrashcan(item)" class="text-center align-middle">
+            <i
+              class="fas fa-trash-alt text-danger"
+              @click.stop="$emit('delete-item', item)"
+              style="cursor: pointer;"
+            ></i>
           </td>
         </tr>
         <tr v-if="paginatedItems.length === 0">
@@ -68,6 +81,8 @@
 </template>
 
 <script>
+import { useUserStore } from '../stores/userStore';
+
 export default {
   name: 'DataGrid',
   props: {
@@ -97,6 +112,12 @@ export default {
     };
   },
   computed: {
+    userStore() {
+      return useUserStore()
+    },
+    currentUser() {
+      return this.userStore.user
+    },
     filteredItems() {
       if (!this.filterText) return this.items;
       const text = this.filterText.toLowerCase();
@@ -152,6 +173,29 @@ export default {
     }
   },
   methods: {
+    shouldShowTrashcan(item) {
+      const role = this.currentUser.role;
+      if (!role) return false;
+
+      if ('holeCount' in item && role === 'Admin') {
+        return true;
+      }
+
+      if ('bruttoScore' in item && (role === 'User' || role === 'Admin') ) {
+        return true;
+      }
+
+      return false;
+    },
+    shouldShowTrashcanTH(columns) {
+      const role = this.currentUser?.role;
+      if (!role) return false;
+
+      return columns.some(column =>
+        (column.key === 'holeCount' && role === 'Admin') ||
+        (column.key === 'bruttoScore' && (role === 'User' || role === 'Admin'))
+      );
+    },
     sortBy(key) {
       if (this.sortKey === key) {
         this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';

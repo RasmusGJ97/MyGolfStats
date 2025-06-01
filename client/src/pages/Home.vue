@@ -99,7 +99,7 @@ export default {
     return {
       userStore: useUserStore(),
       courseStore: useCourseStore(),
-      palette: ['#38761d', '#cc0000'],
+      palette: ['#38761d', '#cc0000', '#cc0000', '#cc0000', '#cc0000'],
 
       mostPlayedCourseData: [],
       mostPlayedCourseNames: [],
@@ -146,18 +146,30 @@ export default {
       return this.userStore.user.rounds.filter(r => new Date(r.date).getFullYear() === currentYear).length
     },
     firSeries() {
-      const allStats = this.userStore.user.rounds.flatMap(r => r.statistics || [])
-      const total = allStats.filter(s => s.fiR !== null).length
-      const hit = allStats.filter(s => s.fiR === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const allStats = this.userStore?.user?.rounds?.flatMap(r => r.statistics || []) || [];
+      const total = allStats.filter(s => ['hit', 'miss-left', 'miss-right', 'miss-short', 'miss-long'].includes(s.fiR)).length;
+      const hit = allStats.filter(s => s.fiR === 'hit').length;
+      const missLeft = allStats.filter(s => s.fiR === 'miss-left').length;
+      const missRight = allStats.filter(s => s.fiR === 'miss-right').length;
+      const missShort = allStats.filter(s => s.fiR === 'miss-short').length;
+      const missLong = allStats.filter(s => s.fiR === 'miss-long').length;
+
+      return total > 0
+        ? [hit, missLeft, missRight, missShort, missLong]
+        : [0, 0, 0, 0, 0];
     },
     girSeries() {
-      const allStats = this.userStore.user.rounds.flatMap(r => r.statistics || [])
-      const total = allStats.filter(s => s.giR !== null).length
-      const hit = allStats.filter(s => s.giR === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const allStats = this.userStore?.user?.rounds?.flatMap(r => r.statistics || []) || [];
+      const total = allStats.filter(s => ['hit', 'miss-left', 'miss-right', 'miss-short', 'miss-long'].includes(s.giR)).length;
+      const hit = allStats.filter(s => s.giR === 'hit').length;
+      const missLeft = allStats.filter(s => s.giR === 'miss-left').length;
+      const missRight = allStats.filter(s => s.giR === 'miss-right').length;
+      const missShort = allStats.filter(s => s.giR === 'miss-short').length;
+      const missLong = allStats.filter(s => s.giR === 'miss-long').length;
+
+      return total > 0
+        ? [hit, missLeft, missRight, missShort, missLong]
+        : [0, 0, 0, 0, 0];
     },
     upDownSeries() {
       const allStats = this.userStore.user.rounds.flatMap(r => r.statistics || [])
@@ -295,14 +307,20 @@ export default {
         },
         tooltip: {
           theme: 'dark'
-        }
+        },
       }
     }
   },
   methods: {
     donutOptions(label) {
+      const labelsMap = {
+        'FiR': ['Träff', 'Miss vänster', 'Miss höger', 'Miss kort', 'Miss lång'],
+        'GiR': ['Träff', 'Miss vänster', 'Miss höger', 'Miss kort', 'Miss lång'],
+        'Up & Down': [`${label} - Ja`, `${label} - Nej`]
+      };
+
       return {
-        labels: [`${label} - Ja`, `${label} - Nej`],
+        labels: labelsMap[label] || [],
         title: {
           text: `${label} % i år`,
           align: 'center',
@@ -316,7 +334,7 @@ export default {
           horizontalAlign: 'center',
           fontSize: '14px',
           labels: {
-            colors: ['#ffffff', '#ffffff']
+            colors: ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
           }
         },
         dataLabels: {

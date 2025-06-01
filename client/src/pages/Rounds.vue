@@ -21,6 +21,7 @@
           :columns="columns"
           :pageSize="10"
           @row-clicked="onRowClicked"
+          @delete-item="onDeleteClicked"
         />
 
         <div v-else class="text-light">Inga rundor kunde visas.</div>
@@ -33,6 +34,7 @@
 import DataGrid from '../components/DataGrid.vue'
 import { useUserStore } from '../stores/userStore'
 import { useCourseStore } from '../stores/courseStore'
+import { deleteRound } from '../api/MyGolfStatsApi'
 
 export default {
   components: { DataGrid },
@@ -51,42 +53,45 @@ export default {
     };
   },
   async mounted() {
-    const userStore = useUserStore();
-    const courseStore = useCourseStore();
-
-    try {
-      await userStore.fetchUser();
-      courseStore.getCourseById();
-    } catch (err) {
-      console.error("Kunde inte hämta golfrundor:", err);
-    } finally {
-      this.loading = false;
-    }
-
-    this.user = userStore.user;
-    this.rounds = (this.user.rounds || []).map(round => {
-      const courseId = round.statistics?.[0]?.hole?.courseId;
-      const calculatedPar = round.statistics?.reduce((sum, stat) => {
-        return sum + (stat.hole?.par || 0);
-      }, 0);
-      const course = courseStore.courses.find(c => c.id === courseId);
-      const clubName = course?.clubName || 'Okänd klubb';
-
-      return {
-        id: round.id,
-        clubName: clubName,
-        date: new Date(round.date).toLocaleDateString('sv-SE'),
-        tee: round.tee || 'Ej angiven',
-        par: calculatedPar,
-        nettoScore: round.nettoScore ?? '-',
-        bruttoScore: round.bruttoScore ?? '-',
-        rawDate: new Date(round.date)
-      };
-    })
-    .sort((a, b) => b.rawDate - a.rawDate)
-    .map(({ rawDate, ...rest }) => rest);;
+    await this.loadRounds()
   },
   methods: {
+    async loadRounds() {
+      const userStore = useUserStore();
+      const courseStore = useCourseStore();
+
+      try {
+        await userStore.fetchUser();
+        courseStore.getCourseById();
+      } catch (err) {
+        console.error("Kunde inte hämta golfrundor:", err);
+      } finally {
+        this.loading = false;
+      }
+
+      this.user = userStore.user;
+      this.rounds = (this.user.rounds || []).map(round => {
+        const courseId = round.statistics?.[0]?.hole?.courseId;
+        const calculatedPar = round.statistics?.reduce((sum, stat) => {
+          return sum + (stat.hole?.par || 0);
+        }, 0);
+        const course = courseStore.courses.find(c => c.id === courseId);
+        const clubName = course?.clubName || 'Okänd klubb';
+
+        return {
+          id: round.id,
+          clubName: clubName,
+          date: new Date(round.date).toLocaleDateString('sv-SE'),
+          tee: round.tee || 'Ej angiven',
+          par: calculatedPar,
+          nettoScore: round.nettoScore ?? '-',
+          bruttoScore: round.bruttoScore ?? '-',
+          rawDate: new Date(round.date)
+        };
+      })
+      .sort((a, b) => b.rawDate - a.rawDate)
+      .map(({ rawDate, ...rest }) => rest);
+    },
     onAddRound() {
       this.$router.push(`/round/new`);
     },
@@ -95,6 +100,13 @@ export default {
       const fullRoundInfo = userStore.getRoundById(round.id)
       userStore.setSelectedRound(fullRoundInfo);
       this.$router.push(`/round/${fullRoundInfo.id}`);
+    },
+    async onDeleteClicked(round) {
+      const confirmed = window.confirm(`Är du säker på att du vill ta bort denna rundan?`);
+      
+      if (!confirmed) return;
+      await deleteRound(round.id)
+      await this.loadRounds()
     }
   }
 };
