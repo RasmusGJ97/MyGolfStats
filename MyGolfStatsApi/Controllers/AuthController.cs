@@ -19,7 +19,7 @@ namespace MyGolfStatsApi.Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("ping")]
+        [HttpGet("ping")]
         public async Task<IActionResult> Ping()
         {
             return Ok("Pong");
