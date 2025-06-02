@@ -17,6 +17,7 @@
             <div class="ps-3">
               <div v-if="!editMode">
                 <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
                 <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
                 <p><strong>HCP:</strong> {{ user.hcp }}</p>
               </div>

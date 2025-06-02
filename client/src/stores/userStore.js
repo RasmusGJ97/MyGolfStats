@@ -12,7 +12,6 @@ export const useUserStore = defineStore('user', {
       if (userId) {
         const userData = await getUser(userId)
         this.user = userData
-        console.log(this.user)
       }
     },
 

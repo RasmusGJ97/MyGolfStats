@@ -5,12 +5,16 @@ import Courses from '../pages/Courses.vue'
 import Rounds from '../pages/Rounds.vue'
 import Settings from '../pages/Settings.vue'
 import Statistics from '../pages/Statistics.vue'
+import ForgotPassword from '../pages/ForgotPassword.vue'
+import ResetPassword from '../pages/ResetPassword.vue'
 
 import { isLoggedIn } from '../api/MyGolfStatsApi'
 
 const routes = [
   { path: '/', component: Home, meta: {requiresAuth: true } },
   { path: '/login', component: Login },
+  { path: '/forgot-password', component: ForgotPassword },
+  { path: '/reset-password', component: ResetPassword },
   { path: '/courses', component: Courses, meta: {requiresAuth: true } },
   { path: '/rounds', component: Rounds, meta: {requiresAuth: true } },
   { path: '/settings', component: Settings, meta: {requiresAuth: true } },
