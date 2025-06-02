@@ -106,11 +106,17 @@ namespace MyGolfStatsApi
 
             app.UseHttpsRedirection();
 
+            // Använd statiska filer i wwwroot
+            app.UseDefaultFiles();       // Detta letar efter index.html
+            app.UseStaticFiles();        // Detta serverar t.ex. .js, .css, etc
+
             app.UseAuthentication();
             app.UseAuthorization();
 
 
             app.MapControllers();
+
+            app.MapFallbackToFile("index.html");
 
             app.Run();
         }
