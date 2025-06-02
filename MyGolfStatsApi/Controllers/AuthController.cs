@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MyGolfStatsApi.Db.AppDbContext;
-using MyGolfStatsApi.Db.Models;
 using MyGolfStatsApi.DTOs;
 using MyGolfStatsApi.Services;
 

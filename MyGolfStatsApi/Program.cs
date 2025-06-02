@@ -80,7 +80,7 @@ namespace MyGolfStatsApi
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173")
+                        policy.WithOrigins(builder.Configuration["Client:BaseUrl"])
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                     });

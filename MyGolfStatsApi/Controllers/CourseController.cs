@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyGolfStatsApi.DTOs;
 using MyGolfStatsApi.Services;
-using System.Runtime.InteropServices.ObjectiveC;
 
 namespace MyGolfStatsApi.Controllers
 {

@@ -1,6 +1,4 @@
-﻿using MyGolfStatsApi.Db.Models;
-
-namespace MyGolfStatsApi.DTOs
+﻿namespace MyGolfStatsApi.DTOs
 {
     public class UserUpdateDTO
     {

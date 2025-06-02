@@ -1,7 +1,4 @@
-﻿using MyGolfStatsApi.Db.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace MyGolfStatsApi.DTOs
+﻿namespace MyGolfStatsApi.DTOs
 {
     public class CourseDTO
     {

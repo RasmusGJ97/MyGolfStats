@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyGolfStatsApi.Db.AppDbContext;
 using MyGolfStatsApi.Db.Models;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using System.Net.Mail;
 using System.Net;
+using System.Net.Mail;
 using System.Web;
 
 namespace MyGolfStatsApi.Services
@@ -12,13 +10,11 @@ namespace MyGolfStatsApi.Services
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
-        private readonly string _apiKey;
         private readonly AppDbContext _context;
 
         public EmailService(IConfiguration config, AppDbContext dbContext)
         {
             _config = config;
-            _apiKey = config["SendGrid:ApiKey"];
             _context = dbContext;
         }
 
@@ -39,7 +35,7 @@ namespace MyGolfStatsApi.Services
             _context.PasswordResetTokens.Add(resetToken);
             await _context.SaveChangesAsync();
 
-            var frontendUrl = _config["Frontend:BaseUrl"];
+            var frontendUrl = _config["Client:BaseUrl"];
             var resetLink = $"{frontendUrl}/reset-password?token={HttpUtility.UrlEncode(token)}";
 
 
