@@ -19,6 +19,12 @@ namespace MyGolfStatsApi.Controllers
             _emailService = emailService;
         }
 
+        [HttpPost("ping")]
+        public async Task<IActionResult> Ping()
+        {
+            return Ok("Pong");
+        }        
+        
         [HttpPost("register")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO req)
