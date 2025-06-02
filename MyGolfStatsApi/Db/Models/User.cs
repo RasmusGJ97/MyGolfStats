@@ -14,7 +14,11 @@ namespace MyGolfStatsApi.Db.Models
         [Required]
         [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
-        public string LastName { get; set; }
+        public string LastName { get; set; }        
+        [Required]
+        [MaxLength(100)]
+        [Column(TypeName = "varchar(100)")]
+        public string Email { get; set; }
         [Required]
         [Range(-8, 54)]
         public decimal Hcp { get; set; }

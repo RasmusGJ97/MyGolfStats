@@ -82,7 +82,7 @@ namespace MyGolfStatsApi.Controllers
             });
         }
 
-        [HttpDelete("admin/delete")]
+        [HttpDelete("admin/deleteCourse/{courseId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourse(int courseId)
         {

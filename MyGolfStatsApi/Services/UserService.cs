@@ -161,29 +161,136 @@ namespace MyGolfStatsApi.Services
                     throw new Exception($"User with ID {userToUpdate.Id} not found.");
                 }
 
-                existingUser.FirstName = userToUpdate.FirstName;
-                existingUser.LastName = userToUpdate.LastName;
-                existingUser.Hcp = userToUpdate.Hcp;
-                existingUser.Settings.StatFiR = userToUpdate.Settings.StatFiR;
-                existingUser.Settings.StatGiR = userToUpdate.Settings.StatGiR;
-                existingUser.Settings.StatBirdie = userToUpdate.Settings.StatBirdie;
-                existingUser.Settings.StatEagle = userToUpdate.Settings.StatEagle;
-                existingUser.Settings.StatPenaltyStrokes = userToUpdate.Settings.StatPenaltyStrokes;
-                existingUser.Settings.StatPenaltyCause = userToUpdate.Settings.StatPenaltyCause;
-                existingUser.Settings.StatUpAndDown = userToUpdate.Settings.StatUpAndDown;
-                existingUser.Settings.StatSandSave = userToUpdate.Settings.StatSandSave;
-                existingUser.Settings.StatPutts = userToUpdate.Settings.StatPutts;
-                existingUser.Settings.StatLostBalls = userToUpdate.Settings.StatLostBalls;
+                var mappedUser = userMappingMethod(existingUser, userToUpdate);
 
                 await _context.SaveChangesAsync();
 
-                return existingUser;
+                return mappedUser;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, $"Message: {ex.Message}. Method: {MethodBase.GetCurrentMethod().Name ?? ""}.");
                 throw new Exception("An error occurred while updating a user", ex);
             }
+        }
+
+        public async Task<bool> UpdatePassword(PasswordChangeDTO passwordChange)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(passwordChange.NewPassword) || passwordChange.NewPassword.Length < 8)
+                {
+                    throw new Exception("Nytt lösenord måste vara minst 8 tecken långt.");
+                }
+
+                var existingUser = await GetUserWithId(passwordChange.UserId);
+
+                if (existingUser == null)
+                {
+                    throw new Exception($"User with ID {passwordChange.UserId} not found.");
+                }
+
+                if (!PasswordHasher.Verify(passwordChange.OldPassword, existingUser.PasswordHash))
+                {
+                    throw new Exception("Felaktigt nuvarande lösenord.");
+                }
+
+                existingUser.PasswordHash = PasswordHasher.Hash(passwordChange.NewPassword);
+
+                _context.Users.Update(existingUser);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, $"Message: {ex.Message}. Method: {MethodBase.GetCurrentMethod().Name ?? ""}.");
+                throw new Exception("An error occurred while updating a password", ex);
+            }
+        }
+
+        public async Task<bool> DeleteUser(Guid userId)
+        {
+            try
+            {
+                var existingUser = await GetUserWithId(userId);
+
+                if (existingUser == null)
+                {
+                    throw new Exception($"User with ID {userId} not found.");
+                } 
+
+                _context.Users.Remove(existingUser);
+
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, $"Message: {ex.Message}. Method: {MethodBase.GetCurrentMethod().Name ?? ""}.");
+                throw new Exception("An error occurred while deleting a user", ex);
+            }
+        }
+
+        public User userMappingMethod(User existingUser, UserUpdateDTO userToUpdate)
+        {
+            existingUser.FirstName = userToUpdate.FirstName;
+            existingUser.LastName = userToUpdate.LastName;
+            existingUser.Hcp = userToUpdate.Hcp;
+            existingUser.Settings.StatFiR = userToUpdate.Settings.StatFiR;
+            existingUser.Settings.StatGiR = userToUpdate.Settings.StatGiR;
+            existingUser.Settings.StatBirdie = userToUpdate.Settings.StatBirdie;
+            existingUser.Settings.StatEagle = userToUpdate.Settings.StatEagle;
+            existingUser.Settings.StatPenaltyStrokes = userToUpdate.Settings.StatPenaltyStrokes;
+            existingUser.Settings.StatPenaltyCause = userToUpdate.Settings.StatPenaltyCause;
+            existingUser.Settings.StatUpAndDown = userToUpdate.Settings.StatUpAndDown;
+            existingUser.Settings.StatSandSave = userToUpdate.Settings.StatSandSave;
+            existingUser.Settings.StatPutts = userToUpdate.Settings.StatPutts;
+            existingUser.Settings.StatLostBalls = userToUpdate.Settings.StatLostBalls;
+            existingUser.Bag.Driver = userToUpdate.Bag.Driver;
+            existingUser.Bag.TwoW = userToUpdate.Bag.TwoW;
+            existingUser.Bag.ThreeW = userToUpdate.Bag.ThreeW;
+            existingUser.Bag.FourW = userToUpdate.Bag.FourW;
+            existingUser.Bag.FiveW = userToUpdate.Bag.FiveW;
+            existingUser.Bag.SixW = userToUpdate.Bag.SixW;
+            existingUser.Bag.SevenW = userToUpdate.Bag.SevenW;
+            existingUser.Bag.TwoHy = userToUpdate.Bag.TwoHy;
+            existingUser.Bag.ThreeHy = userToUpdate.Bag.ThreeHy;
+            existingUser.Bag.FourHy = userToUpdate.Bag.FourHy;
+            existingUser.Bag.FiveHy = userToUpdate.Bag.FiveHy;
+            existingUser.Bag.OneI = userToUpdate.Bag.OneI;
+            existingUser.Bag.TwoI = userToUpdate.Bag.TwoI;
+            existingUser.Bag.ThreeI = userToUpdate.Bag.ThreeI;
+            existingUser.Bag.FourI = userToUpdate.Bag.FourI;
+            existingUser.Bag.FiveI = userToUpdate.Bag.FiveI;
+            existingUser.Bag.SixI = userToUpdate.Bag.SixI;
+            existingUser.Bag.SevenI = userToUpdate.Bag.SevenI;
+            existingUser.Bag.EightI = userToUpdate.Bag.EightI;
+            existingUser.Bag.NineI = userToUpdate.Bag.NineI;
+            existingUser.Bag.PWedge = userToUpdate.Bag.PWedge;
+            existingUser.Bag.AWedge = userToUpdate.Bag.AWedge;
+            existingUser.Bag.GWedge = userToUpdate.Bag.GWedge;
+            existingUser.Bag.SWedge = userToUpdate.Bag.SWedge;
+            existingUser.Bag.LWedge = userToUpdate.Bag.LWedge;
+
+            return existingUser;
+        }
+        public async Task<UserResponseDTO> MapToUserResponse(User user)
+        {
+            return new UserResponseDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                GolfId = user.GolfId,
+                Role = user.Role,
+                Hcp = user.Hcp,
+                Settings = user.Settings,
+                Rounds = user.Rounds,
+                Bag = user.Bag
+            };
         }
     }
 }

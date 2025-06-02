@@ -63,8 +63,8 @@ namespace MyGolfStatsApi.Controllers
             });
         }
 
-        [HttpDelete("admin/delete")]
-        [Authorize(Roles = "Admin")]
+        [HttpDelete("deleteRound/{roundId}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> DeleteRound(int roundId)
         {
             var removed = await _roundService.DeleteRound(roundId);

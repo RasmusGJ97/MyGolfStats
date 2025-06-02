@@ -8,8 +8,8 @@ namespace MyGolfStatsApi.Db.Models
     {
         [Key]
         public int Id { get; set; }
-        public bool? FiR { get; set; }
-        public bool? GiR { get; set; }
+        public string? FiR { get; set; }
+        public string? GiR { get; set; }
         public bool? Birdie { get; set; }
         public bool? Eagle { get; set; }
         [Range(0, 10)]

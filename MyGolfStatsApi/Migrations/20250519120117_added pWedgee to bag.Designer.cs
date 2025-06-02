@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyGolfStatsApi.Db.AppDbContext;
 
@@ -11,9 +12,11 @@ using MyGolfStatsApi.Db.AppDbContext;
 namespace MyGolfStatsApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519120117_added pWedgee to bag")]
+    partial class addedpWedgeetobag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,11 +295,11 @@ namespace MyGolfStatsApi.Migrations
                     b.Property<bool?>("Eagle")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FiR")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("FiR")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("GiR")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("GiR")
+                        .HasColumnType("bit");
 
                     b.Property<int>("HoleId")
                         .HasColumnType("int");
@@ -336,11 +339,6 @@ namespace MyGolfStatsApi.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
