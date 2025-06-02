@@ -16,7 +16,7 @@ namespace MyGolfStatsApi
 
             // Connection to DB
             builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")), ServiceLifetime.Transient);
+            options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDb")), ServiceLifetime.Transient);
 
             builder.Services.AddLogging();
 
@@ -25,6 +25,7 @@ namespace MyGolfStatsApi
             builder.Services.AddScoped<IBagService, BagService>();
             builder.Services.AddScoped<ICourseService, CourseService>();
             builder.Services.AddScoped<IRoundService, RoundService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

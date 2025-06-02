@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyGolfStatsApi.Db.AppDbContext;
+using MyGolfStatsApi.Db.Models;
 using MyGolfStatsApi.DTOs;
 using MyGolfStatsApi.Services;
 
@@ -9,19 +12,23 @@ namespace MyGolfStatsApi.Controllers
     public class AuthController : ControllerBase
     {
         private IUserService _userService;
+        private readonly AppDbContext _context;
+        private IEmailService _emailService;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, AppDbContext context, IEmailService emailService)
         {
             _userService = userService;
+            _context = context;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO req)
         {
-            if (_userService.CheckIfUserExists(req.GolfId).Result)
+            if (_userService.CheckIfUserExists(req.GolfId, req.Email).Result)
             {
-                return BadRequest("Golf-ID already exists.");
+                return BadRequest("Golf-ID or email already exists.");
             }
             else
             {
@@ -44,5 +51,30 @@ namespace MyGolfStatsApi.Controllers
 
             return Ok(new { token, user.Id });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest(new { message = "E-postadress krävs." });
+
+            await _emailService.RequestPasswordReset(dto.Email);
+            return Ok("Återställningslänk skickad om e-posten finns registrerad.");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO dto)
+        {
+            try
+            {
+                await _emailService.ResetPassword(dto.Token, dto.NewPassword);
+                return Ok("Lösenordet har återställts.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
