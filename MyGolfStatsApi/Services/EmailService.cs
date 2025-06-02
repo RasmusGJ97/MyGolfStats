@@ -35,7 +35,7 @@ namespace MyGolfStatsApi.Services
             _context.PasswordResetTokens.Add(resetToken);
             await _context.SaveChangesAsync();
 
-            var frontendUrl = _config["Client:LocalBaseUrl"];
+            var frontendUrl = _config["Client:ProdBaseUrl"];
             var resetLink = $"{frontendUrl}/reset-password?token={HttpUtility.UrlEncode(token)}";
 
 
