@@ -39,15 +39,21 @@ html, body {
   background-color: rgba(0, 0, 0, 0.85);
 }
 
+@media (max-width: 991.98px) {
+  .golf-dark-nav .navbar-collapse {
+    background-color: rgba(0, 0, 0, 0.85);
+  }
+}
+
 .navbar {
   z-index: 1000;
   position: relative;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: -56px;
+  margin-top: -60px;
 }
 
 .container-navbar {
-  max-height: 56px !important;
+  max-height: 58px !important;
 }
 
 .nav-item {
@@ -56,10 +62,6 @@ html, body {
 
 .nav-link {
   transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: #0d6efd;
 }
 
 .login-container {
@@ -203,5 +205,20 @@ html, body {
   .col-md-5-5 {
     flex: 0 0 auto !important;
     width: 48.4% !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .filter-div {
+    margin-top: 12px;
+  }
+
+  .statistics-div {
+    margin-top: 60px !important;
+    max-width: 90vw;
+  }
+
+  .invisible-div-statistics {
+    max-width: 100%;
   }
 }

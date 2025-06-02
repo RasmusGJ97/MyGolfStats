@@ -1,75 +1,77 @@
 <template>
   <div class="background-image">
-    <div class="filter-div golf-dark m-3 p-4 rounded text-light">
-      <div class="mb-2">
-        <label class="d-block">Visa statistik för:</label>
-        <select v-model="selectedFilter" class="form-select w-100 bg-dark text-light border-secondary">
-          <option value="all">Totalt</option>
-          <option value="year">I år</option>
-          <option value="last10">Senaste 10 rundorna</option>
-          <option value="last5">Senaste 5 rundorna</option>
-          <option value="round">Specifik runda</option>
-        </select>
-      </div>
-      
-      <div class="mb-2" v-if="selectedFilter != 'round'">
-        <label class="d-block">Filtrera på:</label>
-        <select v-model="selectedSubFilter" class="form-select w-100 bg-dark text-light border-secondary">
-          <option value="all">Allt</option>
-          <option value="course">Specifik bana</option>
-          <option value="hole">Specifikt hål</option>
-          <option value="compHcp">Jämfört med samma HCP</option>
-          <option value="compTotal">Jämfört med totalt</option>
-          <option value="compYear">Jämfört med I år</option>
-          <option value="compLast10">Jämfört med senaste 10 rundorna</option>
-          <option value="compLast5">Jämfört med senaste 5 rundorna</option>
-        </select>
-      </div>
-      
-      <div class="mb-2" v-if="selectedFilter === 'round'">
-        <label>Välj rond:</label>
-        <select v-model="selectedRoundId" class="form-select w-100 bg-dark text-light border-secondary">
-          <option disabled value="">-- Välj rond --</option>
-          <option v-for="round in sortedRounds" :key="round.id" :value="round.id">
-            {{ new Date(round.date).toLocaleDateString() }} - {{ getCourseNameFromRound(round) }}
-          </option>
-        </select>
-      </div>
-
-      <div class="mb-2" v-if="selectedSubFilter != 'all' && !selectedSubFilter.startsWith('comp')">
-        <label class="d-block">Välj bana:</label>
-          <select v-model="selectedCourseFilter" class="form-select w-100 bg-dark text-light border-secondary">
-            <option value="all">Alla</option>
-            <option v-for="course in availableCourses" :key="course.id" :value="course.id">
-              {{ course.clubName }}
+    <div class="statistics-div d-flex flex-wrap justify-content-center align-items-center gap-2 gap-md-3 gap-lg-4">
+      <div class="filter-div golf-dark p-4 rounded text-light">
+        <div class="mb-2">
+          <label class="d-block">Visa statistik för:</label>
+          <select v-model="selectedFilter" class="form-select w-100 bg-dark text-light border-secondary">
+            <option value="all">Totalt</option>
+            <option value="year">I år</option>
+            <option value="last10">Senaste 10 rundorna</option>
+            <option value="last5">Senaste 5 rundorna</option>
+            <option value="round">Specifik runda</option>
+          </select>
+        </div>
+        
+        <div class="mb-2" v-if="selectedFilter != 'round'">
+          <label class="d-block">Filtrera på:</label>
+          <select v-model="selectedSubFilter" class="form-select w-100 bg-dark text-light border-secondary">
+            <option value="all">Allt</option>
+            <option value="course">Specifik bana</option>
+            <option value="hole">Specifikt hål</option>
+            <option value="compHcp">Jämfört med samma HCP</option>
+            <option value="compTotal">Jämfört med totalt</option>
+            <option value="compYear">Jämfört med I år</option>
+            <option value="compLast10">Jämfört med senaste 10 rundorna</option>
+            <option value="compLast5">Jämfört med senaste 5 rundorna</option>
+          </select>
+        </div>
+        
+        <div class="mb-2" v-if="selectedFilter === 'round'">
+          <label>Välj rond:</label>
+          <select v-model="selectedRoundId" class="form-select w-100 bg-dark text-light border-secondary">
+            <option disabled value="">-- Välj rond --</option>
+            <option v-for="round in sortedRounds" :key="round.id" :value="round.id">
+              {{ new Date(round.date).toLocaleDateString() }} - {{ getCourseNameFromRound(round) }}
             </option>
           </select>
+        </div>
+  
+        <div class="mb-2" v-if="selectedSubFilter != 'all' && !selectedSubFilter.startsWith('comp')">
+          <label class="d-block">Välj bana:</label>
+            <select v-model="selectedCourseFilter" class="form-select w-100 bg-dark text-light border-secondary">
+              <option value="all">Alla</option>
+              <option v-for="course in availableCourses" :key="course.id" :value="course.id">
+                {{ course.clubName }}
+              </option>
+            </select>
+        </div>
+  
+        <div class="mb-2" v-if="selectedSubFilter == 'hole' && selectedCourseFilter != 'all'">
+          <label class="d-block">Välj hål:</label>
+            <select v-model="selectedHoleFilter" class="form-select w-100 bg-dark text-light border-secondary">
+              <option value="" disabled>-- Välj hål --</option>
+              <option v-for="hole in availableHoles" :key="hole" :value="hole">
+                Hål {{ hole.holeNumber }} - Par {{ hole.par }}
+              </option>
+            </select>
+        </div>
       </div>
-
-      <div class="mb-2" v-if="selectedSubFilter == 'hole' && selectedCourseFilter != 'all'">
-        <label class="d-block">Välj hål:</label>
-          <select v-model="selectedHoleFilter" class="form-select w-100 bg-dark text-light border-secondary">
-            <option value="" disabled>-- Välj hål --</option>
-            <option v-for="hole in availableHoles" :key="hole" :value="hole">
-              Hål {{ hole.holeNumber }} - Par {{ hole.par }}
-            </option>
-          </select>
-      </div>
-    </div>
-    <div class="invisible-div-statistics text-light pb-4 rounded">
-      <div>
-        <StatisticsComponent v-if="!selectedSubFilter.startsWith('comp')"
-          :statistics="filteredRounds"
-          :selectedFilter="selectedFilter"
-          :selectedSubFilter="selectedSubFilter"
-          :selectedCourseFilter="selectedCourseFilter"
-          :selectedHoleFilter="selectedHoleFilter" />
-
-        <CompareStatsComponent v-if="selectedSubFilter.startsWith('comp')"
-          :statistics="filteredRounds"
-          :statisticsToCompareWith="compareFilter"
-          :selectedFilter="selectedFilter"
-          :selectedSubFilter="selectedSubFilter" />
+      <div class="invisible-div-statistics text-light pb-4 rounded">
+        <div class="mb-3">
+          <StatisticsComponent v-if="!selectedSubFilter.startsWith('comp')"
+            :statistics="filteredRounds"
+            :selectedFilter="selectedFilter"
+            :selectedSubFilter="selectedSubFilter"
+            :selectedCourseFilter="selectedCourseFilter"
+            :selectedHoleFilter="selectedHoleFilter" />
+  
+          <CompareStatsComponent v-if="selectedSubFilter.startsWith('comp')"
+            :statistics="filteredRounds"
+            :statisticsToCompareWith="compareFilter"
+            :selectedFilter="selectedFilter"
+            :selectedSubFilter="selectedSubFilter" />
+        </div>
       </div>
     </div>
   </div>

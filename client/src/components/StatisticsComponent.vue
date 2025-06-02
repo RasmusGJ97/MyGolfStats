@@ -3,7 +3,7 @@
     <div class="statistik-container">
       <div class="container py-4">
         <div class="row justify-content-center g-4">
-          <div class="col-6 col-md-4 col-lg-3" v-for="(card, index) in statCards" :key="index">
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-3" v-for="(card, index) in statCards" :key="index">
             <div class="card text-bg-light shadow rounded text-stat h-100 d-flex flex-column text-center">
               <div class="card-body d-flex flex-column justify-content-center">
                 <h5 class="card-title">{{ card.title }}</h5>

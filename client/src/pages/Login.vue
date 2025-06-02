@@ -17,6 +17,12 @@
 
         <p v-if="error" class="text-danger mt-3 text-center">{{ error }}</p>
       </form>
+
+      <div class="text-center mt-3">
+        <router-link to="/forgot-password" class="text-decoration-underline text-light">
+          Glömt lösenord?
+        </router-link>
+      </div>
     </div>
   </div>
 </template>

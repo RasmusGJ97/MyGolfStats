@@ -41,6 +41,28 @@ export const login = async (credentials) => {
   }
 };
 
+export const forgotPassword = async (email) => {
+  try {
+      return await apiClient.post('/Auth/forgot-password', {
+        email: email
+      });
+  } catch (err) {
+    throw err.response?.data?.message || 'Ett fel uppstod vid begäran om återställning.';
+  }
+};
+
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await apiClient.post('/Auth/reset-password', {
+      token,
+      newPassword
+    });
+    return response.data;
+  } catch (err) {
+    throw err.response?.data?.message || 'Ett fel uppstod vid återställning av lösenord.';
+  }
+};
+
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("userId");
