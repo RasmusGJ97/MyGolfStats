@@ -25,12 +25,13 @@ namespace MyGolfStatsApi.Services
             _log = log;
         }
 
-        public async Task<bool> CheckIfUserExists(string golfId)
+        public async Task<bool> CheckIfUserExists(string golfId, string email)
         {
             try
             {
                 var getId = await _context.Users.AnyAsync(u => u.GolfId == golfId);
-                if (getId)
+                var getEmail = await _context.Users.AnyAsync(u => u.Email == email);
+                if (getId || getEmail)
                 {
                     return true;
                 }
@@ -55,6 +56,7 @@ namespace MyGolfStatsApi.Services
                     Id = Guid.NewGuid(),
                     FirstName = req.FirstName,
                     LastName = req.LastName,
+                    Email = req.Email,
                     GolfId = req.GolfId,
                     Role = req.Role,
                     Hcp = req.Hcp,

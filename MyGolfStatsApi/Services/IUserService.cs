@@ -5,7 +5,7 @@ namespace MyGolfStatsApi.Services
 {
     public interface IUserService
     {
-        Task<bool> CheckIfUserExists(string golfId);
+        Task<bool> CheckIfUserExists(string golfId, string email);
         Task<User> RegisterUser(RegisterRequestDTO req);
         Task<User> GetUserWithGolfId(string golfId);
         Task<User> GetUserWithId(Guid id);
