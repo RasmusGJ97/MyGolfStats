@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAllCourses } from '../api/MyGolfStatsApi';
+import { getAllCourses, getUserId } from '../api/MyGolfStatsApi';
 
 export const useCourseStore = defineStore('course', {
   state: () => ({
@@ -9,11 +9,14 @@ export const useCourseStore = defineStore('course', {
 
   actions: {
     async fetchCourses() {
-      const data = await getAllCourses();
-      this.courses = data.map(course => ({
-        ...course,
-        holeCount: Array.isArray(course.holes) ? course.holes.length : 0
-      }));
+      const userId = await getUserId()
+      if (userId){
+        const data = await getAllCourses();
+        this.courses = data.map(course => ({
+          ...course,
+          holeCount: Array.isArray(course.holes) ? course.holes.length : 0
+        }));
+      }      
     },
 
     setSelectedCourse(course) {
