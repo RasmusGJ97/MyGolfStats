@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyGolfStatsApi.Db.AppDbContext;
 using MyGolfStatsApi.DTOs;
 using MyGolfStatsApi.Services;
@@ -10,18 +11,16 @@ namespace MyGolfStatsApi.Controllers
     public class AuthController : ControllerBase
     {
         private IUserService _userService;
-        private readonly AppDbContext _context;
         private IEmailService _emailService;
 
-        public AuthController(IUserService userService, AppDbContext context, IEmailService emailService)
+        public AuthController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
-            _context = context;
             _emailService = emailService;
         }
 
         [HttpPost("register")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO req)
         {
             if (_userService.CheckIfUserExists(req.GolfId, req.Email).Result)
