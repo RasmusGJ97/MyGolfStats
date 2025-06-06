@@ -13,7 +13,10 @@
           <input id="password" v-model="password" type="password" class="form-control bg-secondary text-light" required />
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Logga in</button>
+        <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
+          <i v-if="isLoading" class="fas fa-circle-notch fa-spin me-2"></i>
+          <span>{{ isLoading ? '' : 'Logga in' }}</span>
+        </button>
 
         <p v-if="error" class="text-danger mt-3 text-center">{{ error }}</p>
       </form>
@@ -38,19 +41,20 @@ const password = ref('')
 const error = ref('')
 const router = useRouter()
 const userStore = useUserStore()
-
+const isLoading = ref(false)
 
 const handleLogin = async () => {
+  isLoading.value = true
+  error.value = ''
   try {
-    error.value = ''
     const user = await login({ golfId: golfId.value, password: password.value })
-
     await userStore.fetchUser()
-
     router.push('/')
   } catch (err) {
     error.value = 'Fel användarnamn eller lösenord.'
     console.error(err)
+  } finally {
+    isLoading.value = false
   }
 }
 </script>

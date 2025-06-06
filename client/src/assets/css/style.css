@@ -40,8 +40,13 @@ html, body {
 }
 
 @media (max-width: 991.98px) {
+  .nav-items-center {
+    margin-top: -5px;
+  }
+
   .golf-dark-nav .navbar-collapse {
     background-color: rgba(0, 0, 0, 0.85);
+    margin-top: 5px !important;
   }
 }
 

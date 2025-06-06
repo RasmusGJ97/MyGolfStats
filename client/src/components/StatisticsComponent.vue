@@ -259,9 +259,10 @@ export default {
     },
 
     avgPuttsPerHole() {
-      const totalPutts = this.normalizedStatistics.reduce((sum, s) => sum + (s.putts || 0), 0)
-      const totalHoles = this.normalizedStatistics.length
-      return totalHoles > 0 ? (totalPutts / totalHoles).toFixed(2) : 0
+      const validStats = this.normalizedStatistics.filter(s => s.putts != null);
+      const totalPutts = validStats.reduce((sum, s) => sum + s.putts, 0);
+      const totalHoles = validStats.length;
+      return totalHoles > 0 ? (totalPutts / totalHoles).toFixed(2) : 0;
     },
 
     birdieCount() {
@@ -284,19 +285,19 @@ export default {
 
     penaltyCauseData() {
       const allStats = this.normalizedStatistics;
-
       const causeCount = {};
 
       allStats.forEach(stat => {
         if (Array.isArray(stat.penaltyCause)) {
           stat.penaltyCause.forEach(cause => {
             const name = cause.cause || 'Okänd orsak';
+            const strokes = typeof cause.penaltyStrokes === 'number' ? cause.penaltyStrokes : 0;
 
             if (!causeCount[name]) {
               causeCount[name] = 0;
             }
 
-            causeCount[name] += (typeof stat.penaltyStrokes === 'number' ? stat.penaltyStrokes : 0);
+            causeCount[name] += strokes;
           });
         }
       });
@@ -314,12 +315,13 @@ export default {
           stat.penaltyCause.forEach(cause => {
             const rawClub = cause.club || 'unknown';
             const readableClub = nameMap[rawClub] || rawClub;
+            const strokes = typeof cause.penaltyStrokes === 'number' ? cause.penaltyStrokes : 0;
 
             if (!clubCount[readableClub]) {
               clubCount[readableClub] = 0;
             }
 
-            clubCount[readableClub] += (typeof stat.penaltyStrokes === 'number' ? stat.penaltyStrokes : 0);
+            clubCount[readableClub] += strokes;
           });
         }
       });

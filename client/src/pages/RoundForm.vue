@@ -57,7 +57,13 @@
   
                 <div class="col-6 col-md-4" v-if="userSettings.statPutts">
                   <label class="form-label">Puttar:</label>
-                  <input v-model.number="stat.putts" type="number" min="0" class="form-control form-control-sm" />
+                  <input
+                    :value="stat.putts"
+                    @input="val => stat.putts = val.target.value === '' ? null : Number(val.target.value)"
+                    type="number"
+                    min="0"
+                    class="form-control form-control-sm"
+                  />                
                 </div>
   
                 <div class="col-6 col-md-4" v-if="userSettings.statLostBalls">
