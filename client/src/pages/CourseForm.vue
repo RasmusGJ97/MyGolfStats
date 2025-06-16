@@ -132,7 +132,7 @@ export default {
         this.$router.push("/courses");
       } catch (err) {
         console.error("Fel vid spara:", err);
-        alert("Kunde inte spara golfbanan.");
+        alert("Kunde inte spara golfbanan. " + err.message);
       }
     }
   }

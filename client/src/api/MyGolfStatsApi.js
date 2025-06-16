@@ -1,6 +1,8 @@
 import axios from "axios";
+import { useUserStore } from "../stores/userStore";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL_PROD;
+// const API_BASE_URL = import.meta.env.VITE_API_URL_LOCAL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -90,16 +92,28 @@ export const getAllCourses = async () => {
 };
 
 export const updateCourse = async (course) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att uppdatera banor.');
+  }
   const response = await apiClient.put(`/Course/updateCourse`, course);
   return response.data.course;
 };
 
 export const addCourse = async (course) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att lägga till en bana.');
+  }
   const response = await apiClient.post(`/Course/addCourse`, course);
   return response.data.course;
 };
 
 export const deleteCourse = async (courseId) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att ta bort en bana.');
+  }
   const response = await apiClient.delete(`/Course/admin/deleteCourse/${courseId}`);
   return response.data.courseRemoved;
 };
@@ -107,11 +121,19 @@ export const deleteCourse = async (courseId) => {
 // ======= ROUND =======
 
 export const updateRound = async (round) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att uppdatera en runda.');
+  }
   const response = await apiClient.put(`/Round/updateRound`, round);
   return response.data.round;
 };
 
 export const addRound = async (round) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att lägga till en runda.');
+  }
   try {
     const response = await apiClient.post(`/Round/addRound`, round);
     return response.data.round;
@@ -120,6 +142,10 @@ export const addRound = async (round) => {
   }
 };
 export const deleteRound = async (roundId) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att ta bort en runda.');
+  }
   try {
     const response = await apiClient.delete(`/Round/deleteRound/${roundId}`);
     return response.data.roundRemoved;
@@ -145,6 +171,10 @@ export const getUser = async (userId) => {
 };
 
 export const updateUser = async (userToUpdate) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att uppdatera user.');
+  }
   try {
     const response = await apiClient.put(`/User/updateUser`, userToUpdate);
     return response.data.user;
@@ -155,6 +185,10 @@ export const updateUser = async (userToUpdate) => {
 };
 
 export const updatePassword = async (oldPassword, newPassword, userId) => {
+  const userStore = useUserStore();
+  if (userStore.isDemoUser()) {
+    throw new Error('Demo-användare har inte rätt till att uppdatera lösenord.');
+  }
   try {
     const response = await apiClient.put(`/User/updatePassword`, {
       oldPassword,

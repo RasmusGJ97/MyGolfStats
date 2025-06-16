@@ -4,7 +4,7 @@ import { getUserId, getUser, updateUser } from '../api/MyGolfStatsApi'
 export const useUserStore = defineStore('user', {
   state: () => ({
     user: null,
-    setSelectedRound: null,
+    selectedRound: null,
   }),
   actions: {
     async fetchUser() {
@@ -13,6 +13,10 @@ export const useUserStore = defineStore('user', {
         const userData = await getUser(userId)
         this.user = userData
       }
+    },
+
+    isDemoUser() {
+      return this.user?.role === 'Demo';
     },
 
     setSelectedRound(round) {
@@ -30,6 +34,7 @@ export const useUserStore = defineStore('user', {
         this.user = updatedUser
       } catch (error) {
         console.error("Misslyckades med att uppdatera användare:", error)
+        throw error;
       }
     }
   }
