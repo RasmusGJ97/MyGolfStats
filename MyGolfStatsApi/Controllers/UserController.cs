@@ -88,7 +88,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpGet("user")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Demo,User,Admin")]
         public async Task<IActionResult> GetUser(Guid userId)
         {
             if (userId == Guid.Empty)

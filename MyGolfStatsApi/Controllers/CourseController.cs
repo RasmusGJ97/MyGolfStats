@@ -63,7 +63,7 @@ namespace MyGolfStatsApi.Controllers
         }
 
         [HttpGet("allCourses")]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "Demo,User,Admin")]
         public async Task<IActionResult> GetAllCourses()
         {
             var listOfCourses = await _courseService.GetAllCourses();
