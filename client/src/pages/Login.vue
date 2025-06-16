@@ -25,6 +25,14 @@
         <router-link to="/forgot-password" class="text-decoration-underline text-light">
           Glömt lösenord?
         </router-link>
+        <div class="d-block mt-2">
+          <span 
+            @click="demoLogin"
+            class="text-light text-decoration-underline"
+            style="cursor: pointer;">
+            Gå till demo
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -48,6 +56,21 @@ const handleLogin = async () => {
   error.value = ''
   try {
     const user = await login({ golfId: golfId.value, password: password.value })
+    await userStore.fetchUser()
+    router.push('/')
+  } catch (err) {
+    error.value = 'Fel användarnamn eller lösenord.'
+    console.error(err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const demoLogin = async () => {
+  isLoading.value = true
+  error.value = ''
+  try {
+    const user = await login({ golfId: 'Demo-001', password: 'demo1234' })
     await userStore.fetchUser()
     router.push('/')
   } catch (err) {

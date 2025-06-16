@@ -23,14 +23,18 @@
               </div>
               <div v-else>
                 <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
                 <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
-                <p><strong>HCP:</strong> <input type="number" v-model="editableUser.hcp" class="form-control" /></p>
-              </div>
-              <div>
-                <button class="btn btn-outline-success w-20" @click="passChangeOn" v-if="!passChange">Byt lösenord</button>
+                <p class="d-flex align-items-center gap-2">
+                  <strong>HCP:</strong>
+                  <input type="number" v-model="editableUser.hcp" class="form-control form-control-sm w-auto" style="max-width: 65px;" />
+                </p>
               </div>
               <div class="alert alert-success mt-3" v-if="success">Lösenordet har uppdaterats!</div>
               <div class="alert alert-danger mt-3" v-if="error">{{ error }}</div>
+              <div>
+                <button class="btn btn-outline-success w-20" @click="passChangeOn" v-if="!passChange">Byt lösenord</button>
+              </div>
               <div v-if="passChange">
                 <div style="max-width: 400px;">
                   <form @submit.prevent="changePassword">
@@ -181,6 +185,7 @@ export default {
     passChangeOn(){
       if(this.passChange){
         this.passChange = false
+        this.error = null
       }
       else{
         this.passChange = true
@@ -231,10 +236,14 @@ export default {
       delete clone.settings.userId
       this.editableUser = clone
     },
-    saveChanges() {
-      const userStore = useUserStore()
-      userStore.updateUser({ id: this.user.id, ...this.editableUser })
-      this.editMode = false
+    async saveChanges() {
+      const userStore = useUserStore();
+      try {
+        await userStore.updateUser({ id: this.user.id, ...this.editableUser });
+        this.editMode = false;
+      } catch (error) {
+        alert(error.message || "Ett okänt fel inträffade.");
+      }
     },
     cancelChanges() {
       this.editMode = false

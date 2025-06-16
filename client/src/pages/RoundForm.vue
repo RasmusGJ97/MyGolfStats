@@ -503,7 +503,7 @@ export default {
         this.$router.push("/rounds");
       } catch (err) {
         console.log(err)
-        alert("Kunde inte spara runda.");
+        alert("Kunde inte spara runda. " + err.message);
       }
     }
   }
