@@ -75,6 +75,7 @@ const demoLogin = async () => {
   try {
     const user = await login({ golfId: 'Demo-001', password: 'demo1234' })
     await userStore.fetchUser()
+    await courseStore.fetchCourses()
     router.push('/')
   } catch (err) {
     error.value = 'Fel användarnamn eller lösenord.'
