@@ -19,7 +19,7 @@
                 <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>
                 <p><strong>Email:</strong> {{ user.email }}</p>
                 <p><strong>Golf-ID:</strong> {{ user.golfId }}</p>
-                <p><strong>HCP:</strong> {{ user.hcp }}</p>
+                <p><strong>HCP:</strong> {{ Number.isInteger(user.hcp) ? user.hcp.toFixed(1) : user.hcp }}</p>
               </div>
               <div v-else>
                 <p><strong>Namn:</strong> {{ user.firstName }} {{ user.lastName }}</p>

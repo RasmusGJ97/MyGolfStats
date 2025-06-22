@@ -43,12 +43,14 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { login } from '../api/MyGolfStatsApi.js'
 import { useUserStore } from '../stores/userStore'
+import { useCourseStore } from '../stores/courseStore'
 
 const golfId = ref('')
 const password = ref('')
 const error = ref('')
 const router = useRouter()
 const userStore = useUserStore()
+const courseStore = useCourseStore()
 const isLoading = ref(false)
 
 const handleLogin = async () => {
@@ -57,6 +59,7 @@ const handleLogin = async () => {
   try {
     const user = await login({ golfId: golfId.value, password: password.value })
     await userStore.fetchUser()
+    await courseStore.fetchCourses()
     router.push('/')
   } catch (err) {
     error.value = 'Fel användarnamn eller lösenord.'

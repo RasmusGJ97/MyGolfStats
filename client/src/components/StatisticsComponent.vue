@@ -247,15 +247,15 @@ export default {
     upDownSeries() {
       const total = this.normalizedStatistics.filter(s => s.upAndDown !== null).length
       const hit = this.normalizedStatistics.filter(s => s.upAndDown === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const miss = this.normalizedStatistics.filter(s => s.upAndDown === false).length
+      return [hit, miss]
     },
 
     sandSeries() {
       const total = this.normalizedStatistics.filter(s => s.sandSave !== null).length
       const hit = this.normalizedStatistics.filter(s => s.sandSave === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const miss = this.normalizedStatistics.filter(s => s.sandSave === false).length
+      return [hit, miss]
     },
 
     avgPuttsPerHole() {
@@ -346,7 +346,7 @@ export default {
         labels: sorted.map(x => x.name),
         datasets: [
           {
-            label: 'Rounds Played',
+            label: 'Spelade rundor',
             backgroundColor: '#4B9CD3',
             data: sorted.map(x => x.count)
           }

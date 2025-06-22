@@ -13,7 +13,7 @@
       <!-- Användare (desktop) -->
       <div class="d-none d-sm-flex flex-column justify-content-center text-light fw-semibold me-auto ms-3">
         <div v-if="user">{{ user.firstName }} {{ user.lastName }}</div>
-        <div v-if="user" class="small text-secondary">HCP: {{ user.hcp }}</div>
+        <div v-if="user" class="small text-secondary">HCP: {{ Number.isInteger(user.hcp) ? user.hcp.toFixed(1) : user.hcp }}</div>
       </div>
 
       <!-- Toggler (mobil) -->

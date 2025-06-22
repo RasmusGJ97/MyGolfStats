@@ -21,8 +21,9 @@
           </div>
     
           <div class="mb-3">
-            <label class="form-label">Hål: (lägg till minst ett)</label>
-            <div>
+            <label class="form-label" v-if="!isEdit">Hål: (OBS! Lägg till minst ett, antal hål kan inte ändras i efterhand)</label>
+            <label class="form-label error" v-if="isEdit">OBS! Vid ändring av antal hål, skapa istället ny bana</label>
+            <div v-if="!isEdit">
               <button type="button" class="btn btn-outline-light d-flex justify-content-center align-items-center mb-2" @click="addHole">
                 <i class="fas fa-plus small me-2"></i>
                 <span>Lägg till hål</span>
@@ -40,7 +41,7 @@
                   <input v-model.number="hole.par" class="form-control form-control-sm text-center" type="number" placeholder="par" />
                 </div>
 
-                <div class="mt-auto">
+                <div class="mt-auto" v-if="!isEdit">
                   <button type="button" class="btn btn-outline-danger btn-sm mt-2" @click="removeHole(index)">
                     <i class="fas fa-trash"></i>
                   </button>

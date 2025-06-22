@@ -173,10 +173,9 @@ export default {
     },
     upDownSeries() {
       const allStats = this.userStore.user.rounds.flatMap(r => r.statistics || [])
-      const total = allStats.filter(s => s.upAndDown !== null).length
       const hit = allStats.filter(s => s.upAndDown === true).length
-      const percent = total > 0 ? Math.round((hit / total) * 100) : 0
-      return [percent, 100 - percent]
+      const miss = allStats.filter(s => s.upAndDown === false).length
+      return [hit, miss]
     },
     avgPuttsPerHole() {
       const allStats = this.userStore.user.rounds.flatMap(r => r.statistics || [])

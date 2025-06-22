@@ -18,7 +18,7 @@
 
             <div class="col-md-6">
               <label class="form-label">Datum:</label>
-              <Datepicker v-model="round.date" :format="'yyyy-MM-dd'" :input-class="'form-control form-control-sm'" required />
+              <Datepicker v-model="round.date" :format="'yyyy-MM-dd'" :input-class="'form-control form-control-sm'" required :teleport="'body'" />
             </div>
           </div>
 
