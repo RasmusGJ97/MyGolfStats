@@ -98,29 +98,32 @@ namespace MyGolfStatsApi.Services
                     .FirstOrDefaultAsync(c => c.Id == course.Id);
 
                 if (existingCourse == null)
-                {
                     throw new Exception($"Course with ID {course.Id} not found.");
+
+                if (course.Holes.Count != existingCourse.Holes.Count)
+                {
+                    throw new InvalidOperationException($"Det inkommande antalet hål ({course.Holes.Count}) är färre än antalet hål i databasen ({existingCourse.Holes.Count}).");
                 }
 
                 existingCourse.ClubName = course.ClubName;
                 existingCourse.CourseRating = course.CourseRating;
                 existingCourse.Tees = course.Tees;
 
-                _context.Holes.RemoveRange(existingCourse.Holes);
+                var coursePar = 0;
 
-                int coursePar = 0;
-                existingCourse.Holes = new List<Hole>();
-                foreach (var hole in course.Holes)
+                foreach (var holeDto in course.Holes)
                 {
-                    var newHole = new Hole
+                    var existingHole = existingCourse.Holes
+                        .FirstOrDefault(h => h.HoleNumber == holeDto.HoleNumber);
+
+                    if (existingHole != null)
                     {
-                        HoleNumber = hole.HoleNumber,
-                        Par = hole.Par,
-                        Course = existingCourse
-                    };
-                    coursePar += hole.Par;
-                    existingCourse.Holes.Add(newHole);
+                        existingHole.Par = holeDto.Par;
+                    }
+
+                    coursePar += holeDto.Par;
                 }
+
                 existingCourse.Par = coursePar;
 
                 await _context.SaveChangesAsync();
@@ -132,5 +135,6 @@ namespace MyGolfStatsApi.Services
                 throw new Exception("An error occurred while trying to update a course.", ex);
             }
         }
+
     }
 }
