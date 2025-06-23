@@ -1,4 +1,4 @@
-# MyGolfStatsApi
+# MyGolfStats
 
 **Kort beskrivning:**  
 En Vue.js-app för att hålla koll på golfstatistik, rundor och banor.
