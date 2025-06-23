@@ -16,7 +16,7 @@ Diagram och visualiseringar med ApexCharts
   
 **Installation:**  
 1. Klona repot:  
-git clone https://github.com/ditt-anvandarnamn/ditt-repo.git  
+git clone https://github.com/RasmusGJ97/MyGolfStats.git
   
 2. Installera beroenden:  
 npm install  
