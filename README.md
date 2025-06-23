@@ -24,8 +24,8 @@ npm install
 3. Starta utvecklingsservern:  
 npm run dev
 
-4. Starta ditt API i Visual Studio
-testa genom att skriva in ../api/Auth/ping
+4. Starta ditt API i Visual Studio:  
+testa genom att skriva in ../api/Auth/ping  
   
   
 **Teknologier:**  
