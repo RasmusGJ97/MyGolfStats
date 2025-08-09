@@ -5,7 +5,13 @@
       @click.self="close()">
       <div class="scorecardModal-dialog">
         <header class="scorecardModal-header">
-          <h3>Scorekort</h3>
+          <div>
+            <h3>Scorekort</h3>
+          </div>
+          <div class="scorecardModal-buttons">
+            <button class="btn btn-outline-secondary" @click="close">Stäng</button>
+            <button class="btn btn-outline-primary" @click="changeRound">Redigera</button>
+          </div>
         </header>
 
         <section v-if="courseStore.selectedCourse" class="scorecardModal-body">
@@ -15,9 +21,9 @@
               <div>Datum: {{ round.date }}</div>
             </div>
             <div class="scorecardScores m-3 d-flex">
-              <div v-if="round.bruttoScore-this.courseStore.selectedCourse.par > 0" class="col">Brutto Score: {{ round.bruttoScore }} (+{{ round.bruttoScore-this.courseStore.selectedCourse.par }})</div>
-              <div v-else-if="round.bruttoScore-this.courseStore.selectedCourse.par < 0" class="col">Brutto Score: {{ round.bruttoScore }} ({{ round.bruttoScore-this.courseStore.selectedCourse.par }})</div>
-              <div v-else-if="round.bruttoScore-this.courseStore.selectedCourse.par == 0" class="col">Brutto Score: {{ round.bruttoScore }} (par)</div>
+              <div v-if="round.bruttoScore-calcRoundPar(this.round) > 0" class="col">Brutto Score: {{ round.bruttoScore }} (+{{ round.bruttoScore-calcRoundPar(this.round) }})</div>
+              <div v-else-if="round.bruttoScore-calcRoundPar(this.round) < 0" class="col">Brutto Score: {{ round.bruttoScore }} ({{ round.bruttoScore-calcRoundPar(this.round) }})</div>
+              <div v-else-if="round.bruttoScore-calcRoundPar(this.round) == 0" class="col">Brutto Score: {{ round.bruttoScore }} (par)</div>
               <div class="col">Netto Score: {{ round.nettoScore }}</div>
               <div class="col">Erhållna slag: {{ round.bruttoScore-round.nettoScore }}</div>
               <div class="col">Tee: {{ round.tee }}</div>
@@ -33,110 +39,110 @@
               <div class="scorecardRowHeight p-2 scorecardBoarder">FiR</div>
             </div>
 
-            <div class="scorecardRows w-100" style="height: 30px;">
+            <div class="scorecardRows w-100">
               <div class="scorecardRowHole scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'hole-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'hole-' + n" class="col text-center scorecardMobileHeight">
                   {{ n }}
                 </div>
-                <div class="col text-center fw-bold">UT</div>
-                <div v-for="n in 9" :key="'hole-' + (n + 9)" class="col text-center">
+                <div class="col text-center fw-bold scorecardMobileHeight">UT</div>
+                <div v-for="n in 9" :key="'hole-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   {{ n + 9 }}
                 </div>
-                <div class="col text-center fw-bold">IN</div>
-                <div class="col text-center fw-bold">Tot</div>
+                <div class="col text-center fw-bold scorecardMobileHeight">IN</div>
+                <div class="col text-center fw-bold scorecardMobileHeight">Tot</div>
               </div>
 
               <div class="scorecardRowPar scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'par-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'par-' + n" class="col text-center scorecardMobileHeight">
                   {{ getStatByHole(n)?.hole.par ?? '' }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('par', 1, 9) }}
                 </div>
-                <div v-for="n in 9" :key="'par-' + (n + 9)" class="col text-center">
+                <div v-for="n in 9" :key="'par-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   {{ getStatByHole((n + 9))?.hole.par ?? '' }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('par', 10, 18) }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('par', 1, 18) }}
                 </div>
               </div>
               <div class="scorecardRowScore scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'score-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'score-' + n" class="col text-center scorecardMobileHeight">
                   <div :class="[getScoreClass(n), 'score-circle']">
                     <div :class="[getScoreClass2(n), 'score-circle2']">
                       {{ getStatByHole(n)?.strokes ?? '' }}
                     </div>
                   </div>
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('strokes', 1, 9) }}
                 </div>
-                <div v-for="n in 9" :key="'score-' + (n + 9)" class="col text-center">
+                <div v-for="n in 9" :key="'score-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   <div :class="[getScoreClass((n + 9)), 'score-circle']">
                     <div :class="[getScoreClass2((n + 9)), 'score-circle2']">
                       {{ getStatByHole((n + 9))?.strokes ?? '' }}
                     </div>
                   </div>
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('strokes', 10, 18) }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('strokes', 1, 18) }}
                 </div>
               </div>
               <div class="scorecardRowPutts scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'putts-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'putts-' + n" class="col text-center scorecardMobileHeight">
                   {{ getStatByHole(n)?.putts ?? '' }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('putts', 1, 9) }}
                 </div>
-                <div v-for="n in 9" :key="'putts-' + (n + 9)" class="col text-center">
+                <div v-for="n in 9" :key="'putts-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   {{ getStatByHole((n + 9))?.putts ?? '' }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('putts', 10, 18) }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ sumStats('putts', 1, 18) }}
                 </div>
               </div>
               <div class="scorecardRowGiR scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'gir-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'gir-' + n" class="col text-center scorecardMobileHeight">
                   <i :class="getDirectionalIcon(getStatByHole(n)?.giR)" />
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('giR', 1, 9) }}
                 </div>
-                <div v-for="n in 9" :key="'gir-' + (n + 9)" class="col text-center">
+                <div v-for="n in 9" :key="'gir-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   <i :class="getDirectionalIcon(getStatByHole((n + 9))?.giR)" />
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('giR', 10, 18) }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('giR', 1, 18) }}
                 </div>
               </div>
 
               <div class="scorecardRowFiR scorecardRowHeight p-2 scorecardBoarder d-flex">
-                <div v-for="n in 9" :key="'fir-' + n" class="col text-center">
+                <div v-for="n in 9" :key="'fir-' + n" class="col text-center scorecardMobileHeight">
                   <i :class="getDirectionalIcon(getStatByHole(n)?.fiR)" />
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('fiR', 1, 9) }}
                 </div>
-                <div v-for="n in 9" :key="'fir-' + (n + 9)" class="col text-center">
+                <div v-for="n in 9" :key="'fir-' + (n + 9)" class="col text-center scorecardMobileHeight">
                   <i :class="getDirectionalIcon(getStatByHole((n + 9))?.fiR)" />
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('fiR', 10, 18) }}
                 </div>
-                <div class="col text-center fw-bold">
+                <div class="col text-center fw-bold scorecardMobileHeight">
                   {{ countHitsInRange('fiR', 1, 18) }}
                 </div>
               </div>
@@ -146,14 +152,8 @@
             <div class="col">Puttar: {{ sumStats('putts', 1, 18) }}</div>
             <div class="col">GiR: {{ countHitsInRange('giR', 1, 18) }} / {{ countAvailableInRange('giR', 1, 18) }}</div>
             <div class="col">FiR: {{ countHitsInRange('fiR', 1, 18) }} / {{ countAvailableInRange('fiR', 1, 18) }}</div>
-            <div class="col">Birdies: {{ countAvailableInRange('birdie', 1, 18) }}</div>
           </div>
         </section>
-
-        <div class="scorecardModal-footer">
-          <button class="btn btn-outline-secondary" @click="close">Stäng</button>
-          <button class="btn btn-outline-primary" @click="changeRound">Redigera</button>
-        </div>
       </div>
     </div>
 </template>
@@ -214,8 +214,7 @@ export default {
       }
       finally {
         this.isLoadingCourse = false
-        console.log(this.courseStore.selectedCourse)
-        console.log(this.round)
+
       }
     },
     getStatByHole(holeNumber) {
@@ -236,6 +235,14 @@ export default {
       }, 0);
 
       return sum;
+    },
+    calcRoundPar(round){
+      if (!this.round || !this.round.statistics) return 0;
+
+      return round.statistics.reduce((sum, stat) => {
+        const par = stat?.hole?.par || 0;
+        return sum + par;
+      }, 0);
     },
     getDirectionalIcon(value) {
       switch (value) {
@@ -341,14 +348,14 @@ export default {
   padding: 1rem 1.25rem; 
   border: 1px solid rgba(255,255,255,.1);
   margin: 1rem;
+  height: auto;
 }
 
-.scorecardModal-footer {
+.scorecardModal-buttons {
   display: flex;
-  justify-content: flex-end;
+  margin-left: auto;
   gap: .5rem;
-  padding: .75rem 1.25rem 1.25rem;
-  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 1rem 1.25rem;
 }
 
 .scorecardBoarder {
@@ -397,5 +404,67 @@ export default {
 .score-double {
   border: 1px solid rgb(0, 55, 255);
   margin: 3px;
+}
+@media (max-width: 820px) {
+  .scorecardRowHeight {
+    height: auto;
+    width: 42px;
+  }
+
+  .scorecardMobileHeight {
+    height: 42px;
+  }
+
+  .scorecardModal-dialog {
+    height: 80vh;       
+    max-height: 80vh;    
+    overflow-y: auto;     
+    border-radius: 0; 
+  }
+
+  .scorecardBody {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Rubrikerna */
+  .scorecardTitles {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .scorecardTitles .scorecardRowHeight {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Alla rader efter rubrikerna */
+  .scorecardRows {
+    display: flex;
+    flex-direction: row; /* lägg raderna bredvid varandra */
+    width: 100%;
+    overflow-x: auto; /* om det blir fler kolumner än plats */
+    height: 80% !important;
+    max-height: 80%;
+  }
+
+  /* Varje "rad" i desktop blir en kolumn i mobil */
+  .scorecardRows > div {
+    display: flex;
+    flex-direction: column; /* stapla hål-data i kolumn */
+    min-width: 16.5%; /* bredd på varje kolumn */
+    align-items: center;
+    border-right: 1px solid rgba(255,255,255,.1);
+  }
+
+  /* Celler i varje kolumn */
+  .scorecardRows .col {
+    flex: 0 0 auto;
+    text-align: center;
+    padding: 4px 0;
+  }
 }
 </style>

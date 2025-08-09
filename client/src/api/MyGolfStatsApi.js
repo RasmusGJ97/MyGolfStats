@@ -2,7 +2,8 @@ import axios from "axios";
 import { useUserStore } from "../stores/userStore";
 
 // const API_BASE_URL = import.meta.env.VITE_API_URL_PROD;
-const API_BASE_URL = import.meta.env.VITE_API_URL_LOCAL;
+// const API_BASE_URL = import.meta.env.VITE_API_URL_LOCAL;
+const API_BASE_URL = "https://localhost:7159/api";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -23,6 +24,7 @@ export default apiClient;
 export const login = async (credentials) => {
   try {
     const response = await apiClient.post("/Auth/login", credentials);
+    console.log(response)
     const {token, id} = response.data;
 
     if (token) {
