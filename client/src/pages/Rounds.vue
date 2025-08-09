@@ -23,8 +23,15 @@
           @row-clicked="onRowClicked"
           @delete-item="onDeleteClicked"
         />
-
+        
         <div v-else class="text-light">Inga rundor kunde visas.</div>
+
+        <ScorecardModal
+          v-model="show"
+          :round="userStore.selectedRound"
+          @change="onChange"
+          @close="onClose"
+        />
       </div>
     </div>
   </div>
@@ -32,12 +39,17 @@
 
 <script>
 import DataGrid from '../components/DataGrid.vue'
+import ScorecardModal from '../components/ScorecardModal.vue'
 import { useUserStore } from '../stores/userStore'
 import { useCourseStore } from '../stores/courseStore'
 import { deleteRound } from '../api/MyGolfStatsApi'
 
 export default {
-  components: { DataGrid },
+  components: { DataGrid, ScorecardModal },
+  setup() {
+    const userStore = useUserStore()
+    return { userStore }
+  },
   data() {
     return {
       rounds: [],
@@ -45,11 +57,13 @@ export default {
         { label: 'Golfklubb - Bana', key: 'clubName' },
         { label: 'Datum', key: 'date' },
         { label: 'Tee', key: 'tee' },
+        { label: 'Spelade hål', key: 'holesPlayed' },
         { label: 'Par', key: 'par' },
         { label: 'Netto Score', key: 'nettoScore' },
         { label: 'Brutto Score', key: 'bruttoScore' },
       ],
-      loading: true
+      loading: true,
+      show: false
     };
   },
   async mounted() {
@@ -83,6 +97,7 @@ export default {
           clubName: clubName,
           date: new Date(round.date).toLocaleDateString('sv-SE'),
           tee: round.tee || 'Ej angiven',
+          holesPlayed: round.holesPlayed,
           par: calculatedPar,
           nettoScore: round.nettoScore ?? '-',
           bruttoScore: round.bruttoScore ?? '-',
@@ -99,7 +114,14 @@ export default {
       const userStore = useUserStore();
       const fullRoundInfo = userStore.getRoundById(round.id)
       userStore.setSelectedRound(fullRoundInfo);
-      this.$router.push(`/round/${fullRoundInfo.id}`);
+      this.show = true
+    },
+    onClose() {
+      this.show = false
+    },
+    onChange(round) {
+      this.show = false
+      this.$router.push(`/round/${round.id}`);
     },
     async onDeleteClicked(round) {
       const confirmed = window.confirm(`Är du säker på att du vill ta bort denna rundan?`);

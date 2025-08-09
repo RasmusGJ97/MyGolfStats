@@ -121,7 +121,7 @@ export default {
         { title: 'Snitt Score:', value: this.averageScore },
         { title: 'Bästa Score:', value: this.bestScore },
         { title: 'Pliktslag:', value: this.totalPenaltyStrokes },
-        { title: 'Snitt Pliktslag:', value: this.averagePenaltyStrokes },
+        { title: 'Snitt Pliktslag / 18 hål:', value: this.averagePenaltyStrokes },
       ]
     },
     normalizedStatistics() {

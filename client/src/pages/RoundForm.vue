@@ -18,7 +18,7 @@
 
             <div class="col-md-6">
               <label class="form-label">Datum:</label>
-              <Datepicker v-model="round.date" :format="'yyyy-MM-dd'" :input-class="'form-control form-control-sm'" required :teleport="'body'" />
+              <Datepicker v-model="round.date" :format="'yyyy-MM-dd'" :input-class="'form-control form-control-sm'" required :teleport="'body'" :enable-time-picker="false" />
             </div>
           </div>
 
@@ -303,10 +303,11 @@ export default {
         sWedge: "S Wedge",
         lWedge: "L Wedge",
         gWedge: "G Wedge",
-        threeHy: "3 Hy",
-        fourHy: "4 Hy",
-        fiveHy: "5 Hy",
-        twoHy: "2 Hy"
+        pWedge: "P Wedge",
+        threeHy: "3Hy",
+        fourHy: "4Hy",
+        fiveHy: "5Hy",
+        twoHy: "2Hy"
       };
 
       return Object.entries(bag)

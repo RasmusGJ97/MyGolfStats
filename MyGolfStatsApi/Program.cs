@@ -16,8 +16,8 @@ namespace MyGolfStatsApi
 
             // Connection to DB
             builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("AzureDb")), ServiceLifetime.Transient);
-            //options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDb")), ServiceLifetime.Transient);
+            //options.UseSqlServer(builder.Configuration.GetConnectionString("AzureDb")), ServiceLifetime.Transient);
+            options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDb")), ServiceLifetime.Transient);
 
             builder.Services.AddLogging();
 
@@ -81,8 +81,8 @@ namespace MyGolfStatsApi
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
-                        policy.WithOrigins(builder.Configuration["Client:ProdBaseUrl"])
-                        //policy.WithOrigins(builder.Configuration["Client:LocalBaseUrl"])
+                        //policy.WithOrigins(builder.Configuration["Client:ProdBaseUrl"])
+                        policy.WithOrigins(builder.Configuration["Client:LocalBaseUrl"])
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                     });
@@ -115,6 +115,7 @@ namespace MyGolfStatsApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<ApiLoggingMiddleware>();
 
             app.MapControllers();
 

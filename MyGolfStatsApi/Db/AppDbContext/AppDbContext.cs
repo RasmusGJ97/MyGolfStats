@@ -15,6 +15,7 @@ namespace MyGolfStatsApi.Db.AppDbContext
         public DbSet<Statistics> Statistics { get; set; }
         public DbSet<PenaltyCause> PenaltyCauses { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<ApiLogEntry> ApiLogEntries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

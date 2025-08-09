@@ -21,7 +21,7 @@
           </div>
     
           <div class="mb-3">
-            <label class="form-label" v-if="!isEdit">Hål: (OBS! Lägg till minst ett, antal hål kan inte ändras i efterhand)</label>
+            <label class="form-label" v-if="!isEdit">Hål: (OBS! Lägg till minst ett hål, antal hål kan inte ändras i efterhand)</label>
             <label class="form-label error" v-if="isEdit">OBS! Vid ändring av antal hål, skapa istället ny bana</label>
             <div v-if="!isEdit">
               <button type="button" class="btn btn-outline-light d-flex justify-content-center align-items-center mb-2" @click="addHole">
@@ -31,14 +31,26 @@
             </div>
             <div class="row">
               <div v-for="(hole, index) in course.holes" :key="index" class="col-lg-12 col-xl-6 col-xxl-4 mb-3 d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                <div class="text-center">
+                <div class="text-center" v-if="!isEdit">
                   <label class="form-label mb-1">Hål: </label>
                   <input v-model.number="hole.holeNumber" class="form-control form-control-sm text-center" type="number" placeholder="hålnummer" />
                 </div>
 
-                <div class="text-center">
+                <div class="text-center" v-if="!isEdit">
                   <label class="form-label mb-1">Par: </label>
                   <input v-model.number="hole.par" class="form-control form-control-sm text-center" type="number" placeholder="par" />
+                </div>
+
+                <div class="border border-white px-3 py-1 d-inline-block d-inline-flex align-items-center gap-4" v-if="isEdit">
+                  <div class="text-center m-1">
+                    <label class="form-label mb-1">Hål: {{ hole.holeNumber }}</label>
+                  </div>
+                  <div class="text-center m-1">
+                    <label class="form-label mb-1">-</label>
+                  </div>
+                  <div class="text-center m-1">
+                    <label class="form-label mb-1">Par: {{ hole.par }}</label>
+                  </div>
                 </div>
 
                 <div class="mt-auto" v-if="!isEdit">
@@ -121,16 +133,21 @@ export default {
     },
     async onSubmit() {
       try {
-        if (this.isEdit) {
-          // Uppdatera befintlig
-          await updateCourse(this.course);
-          alert("Golfbanan uppdaterad!");
-        } else {
-          // Lägg till ny
-          await addCourse(this.course);
-          alert("Ny golfbana tillagd!");
+        if (this.course.holes.length > 0){
+          if (this.isEdit) {
+            // Uppdatera befintlig
+            await updateCourse(this.course);
+            alert("Golfbanan uppdaterad!");
+          } else {
+            // Lägg till ny
+            await addCourse(this.course);
+            alert("Ny golfbana tillagd!");
+          }
+          this.$router.push("/courses");
         }
-        this.$router.push("/courses");
+        else{
+          alert("Inga hål tillagda, en bana behöver minst ett hål tillagt")
+        }
       } catch (err) {
         console.error("Fel vid spara:", err);
         alert("Kunde inte spara golfbanan. " + err.message);
