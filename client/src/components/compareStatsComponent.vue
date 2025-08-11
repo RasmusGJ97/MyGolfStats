@@ -61,7 +61,7 @@ export default {
   return {
     filterDisplayMap: {
       all: 'Totalt',
-      thisYear: 'I år',
+      year: 'I år',
       last10: 'Senaste 10',
       last5: 'Senaste 5',
       sameHcp: 'Liknande HCP',

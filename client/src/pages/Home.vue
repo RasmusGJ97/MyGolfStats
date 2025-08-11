@@ -197,6 +197,18 @@ export default {
         .map(r => r.bruttoScore)
         .reverse()
     },
+    last10RoundDates() {
+      return this.userStore.user.rounds
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10)
+        .map(r => {
+          const date = new Date(r.date)
+          const day = String(date.getDate()).padStart(2, '0')
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          return `${day}/${month}`
+        })
+        .reverse()
+    },
     roundSeries() {
       return [
         {
@@ -212,7 +224,7 @@ export default {
           foreColor: '#ffffff'
         },
         xaxis: {
-          categories: ['R1','R2','R3','R4','R5','R6','R7','R8','R9','R10'],
+          categories: this.last10RoundDates,
           labels: {
             style: {
               colors: '#ffffff'

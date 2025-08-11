@@ -115,6 +115,7 @@ namespace MyGolfStatsApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseMiddleware<ApiLoggingMiddleware>();
 
             app.MapControllers();
 
