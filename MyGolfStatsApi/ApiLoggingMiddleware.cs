@@ -66,7 +66,6 @@ namespace MyGolfStatsApi
                     UserId = context.User.Identity?.IsAuthenticated == true
                         ? context.User.Identity.Name
                         : null,
-                    IpAddress = context.Connection.RemoteIpAddress?.ToString(),
                     UserAgent = context.Request.Headers["User-Agent"].ToString(),
                     ErrorMessage = errorMessage,
                     StackTrace = stackTrace
