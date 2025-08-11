@@ -23,7 +23,6 @@ export default apiClient;
 export const login = async (credentials) => {
   try {
     const response = await apiClient.post("/Auth/login", credentials);
-    console.log(response)
     const {token, id} = response.data;
 
     if (token) {
